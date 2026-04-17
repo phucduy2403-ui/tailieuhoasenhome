@@ -135,9 +135,9 @@
             <div class="mb-6">
                 <!-- Để thay logo: Lưu file ảnh vào thư mục web-viewer với tên logo.png -->
                 <div class="w-36 h-36 mx-auto shadow-2xl rounded-full overflow-hidden border-4 border-yellow-400/50">
-                    <img src="logo.png" alt="Hoa Sen Home Logo" 
+                    <img src="./logo.png" alt="Hoa Sen Home Logo" 
                          class="w-full h-full object-cover"
-                         onerror="this.src='logo.jpg'; this.onerror=function(){this.style.display='none'; document.getElementById('fallback-logo').style.display='flex'}">
+                         onerror="this.src='./logo.jpg'; this.onerror=function(){this.style.display='none'; document.getElementById('fallback-logo').style.display='flex'}">
                 </div>
                 <!-- Fallback SVG nếu không có file ảnh -->
                 <div id="fallback-logo" class="hidden w-36 h-36 bg-gradient-to-br from-yellow-300 via-yellow-400 to-yellow-500 rounded-full items-center justify-center mx-auto shadow-2xl border-4 border-white/30">
@@ -197,7 +197,7 @@
                 <div class="flex items-center gap-4">
                     <!-- Logo nhỏ trong header -->
                 <div class="w-16 h-16 rounded-2xl overflow-hidden shadow-lg border-2 border-red-200 bg-white flex items-center justify-center">
-                    <img src="logo.png" alt="Logo" class="w-full h-full object-cover" 
+                    <img src="./logo.png" alt="Logo" class="w-full h-full object-cover" 
                          onerror="this.style.display='none'; document.getElementById('header-fallback').style.display='flex'">
                     <div id="header-fallback" class="hidden w-full h-full bg-gradient-to-br from-yellow-300 to-yellow-500 items-center justify-center">
                         <i class="fas fa-home text-2xl text-red-700"></i>
@@ -695,17 +695,59 @@
         // Load documents from JSON file
         async function loadDocumentsFromJSON() {
             try {
+                console.log('Loading documents.json...');
                 const response = await fetch('./documents.json');
+                console.log('Response status:', response.status);
+                
                 if (!response.ok) {
-                    throw new Error('Failed to load documents.json');
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
+                
                 const data = await response.json();
+                console.log('JSON data:', data);
+                
                 documents = data.documents || [];
-                console.log('Loaded', documents.length, 'documents from JSON');
+                console.log('Successfully loaded', documents.length, 'documents');
+                
+                // Log first few documents for debugging
+                if (documents.length > 0) {
+                    console.log('First document:', documents[0]);
+                }
             } catch (error) {
                 console.error('Error loading documents:', error);
-                // Fallback to empty array if JSON fails to load
-                documents = [];
+                
+                // Fallback documents if JSON fails to load
+                documents = [
+                    {
+                        "name": "00. CS LHKV BONG GIO LUSTILE 01.12.2025 - Tr.Khai.pdf",
+                        "displayName": "CS LHKV Bông Gió Lustile",
+                        "category": "linh-hoat",
+                        "type": "pdf",
+                        "size": "313 KB",
+                        "driveUrl": "https://drive.google.com/file/d/19NeQE4nagek035Zd4Pw2FfaA8LgOnTHB/view?usp=sharing",
+                        "startDate": "2025-12-01",
+                        "endDate": "",
+                        "note": ""
+                    },
+                    {
+                        "name": "00. QUY DINH CHI HHMG.pdf",
+                        "displayName": "Quy định Chi Hoa Hồng Môi Giới",
+                        "category": "quy-dinh",
+                        "type": "pdf",
+                        "size": "2.3 MB",
+                        "driveUrl": "",
+                        "startDate": "",
+                        "endDate": "",
+                        "note": ""
+                    }
+                ];
+                
+                console.log('Using fallback documents:', documents.length);
+                
+                // Show error notification
+                if (typeof showNotification === 'function') {
+                    showNotification('Sử dụng dữ liệu mẫu. Vui lòng kiểm tra file documents.json', 'warning');
+                }
             }
         }
         
