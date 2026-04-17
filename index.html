@@ -291,6 +291,9 @@
                     </span>
                 </div>
                 <div class="flex gap-3 flex-wrap">
+                    <button onclick="openManageModal()" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition text-sm font-medium">
+                        <i class="fas fa-list mr-1"></i> Quản lý tài liệu
+                    </button>
                     <button onclick="openDriveModal()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition text-sm font-medium">
                         <i class="fab fa-google-drive mr-1"></i> Thêm từ Drive
                     </button>
@@ -532,6 +535,59 @@
         </div>
     </div>
 
+    <!-- Manage Documents Modal (Admin only) -->
+    <div id="manage-modal" class="login-modal">
+        <div class="glass-card p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-hidden flex flex-col">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+                    <i class="fas fa-list text-green-600 text-2xl"></i>
+                    Quản lý tài liệu
+                </h3>
+                <button onclick="closeManageModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="mb-4 flex gap-3">
+                <button onclick="openDriveModal()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition text-sm">
+                    <i class="fab fa-google-drive mr-1"></i> Thêm tài liệu mới
+                </button>
+                <button onclick="exportDocumentList()" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition text-sm">
+                    <i class="fas fa-download mr-1"></i> Xuất danh sách
+                </button>
+                <div class="ml-auto text-sm text-gray-500 flex items-center">
+                    <i class="fas fa-info-circle mr-1"></i>
+                    Tổng: <span id="manage-total" class="font-bold ml-1">0</span> tài liệu
+                </div>
+            </div>
+            
+            <div class="overflow-y-auto flex-1 border rounded-lg">
+                <table class="w-full">
+                    <thead class="bg-gray-50 sticky top-0">
+                        <tr class="text-left text-xs font-medium text-gray-500 uppercase">
+                            <th class="px-4 py-3">Tên tài liệu</th>
+                            <th class="px-4 py-3">Danh mục</th>
+                            <th class="px-4 py-3">Loại</th>
+                            <th class="px-4 py-3">Link Drive</th>
+                            <th class="px-4 py-3">Ngày áp dụng</th>
+                            <th class="px-4 py-3 text-center">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="manage-list" class="divide-y divide-gray-200">
+                        <!-- Documents will be listed here -->
+                    </tbody>
+                </table>
+                <div id="manage-empty" class="hidden p-8 text-center text-gray-500">
+                    <i class="fas fa-folder-open text-4xl mb-3"></i>
+                    <p>Chưa có tài liệu nào</p>
+                    <button onclick="openDriveModal()" class="mt-3 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition text-sm">
+                        <i class="fab fa-google-drive mr-1"></i> Thêm tài liệu đầu tiên
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Upload Modal (Admin only) -->
     <div id="upload-modal" class="login-modal">
         <div class="glass-card p-6 max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto">
@@ -688,8 +744,38 @@
     </div>
 
     <script>
-        // Document data - will be populated from Google Drive
-        const documents = [];
+        // Document data - Google Drive links
+        let documents = [
+            // PASTE LINK DRIVE TẠI ĐÂY
+            // Ví dụ mẫu:
+            /*
+            { 
+                name: "Chính sách bán hàng Q1/2026.pdf", 
+                displayName: "Chính sách bán hàng Q1/2026",
+                category: "chinh-sach", 
+                type: "pdf", 
+                size: "2.5 MB",
+                startDate: "2026-01-01",
+                endDate: "",
+                note: "Chính sách mới cho Q1/2026",
+                driveUrl: "https://drive.google.com/file/d/ABC123/view",
+                uploadDate: "2026-01-15",
+                isNew: false 
+            },
+            { 
+                name: "Video đào tạo sản phẩm.mp4", 
+                displayName: "Video đào tạo sản phẩm",
+                category: "video", 
+                type: "video", 
+                size: "150 MB",
+                startDate: "2026-01-01",
+                note: "Video hướng dẫn sử dụng sản phẩm",
+                driveUrl: "https://drive.google.com/file/d/XYZ789/view",
+                uploadDate: "2026-01-15",
+                isNew: false 
+            }
+            */
+        ];
 
         const categoryLabels = {
             'chinh-sach': { label: 'Chính sách', color: 'bg-green-100 text-green-700' },
@@ -1117,6 +1203,88 @@
             document.getElementById('drive-modal').classList.remove('active');
         }
 
+        // Manage Documents functions
+        function openManageModal() {
+            if (!isAdminLoggedIn) return;
+            document.getElementById('manage-modal').classList.add('active');
+            renderManageList();
+        }
+
+        function closeManageModal() {
+            document.getElementById('manage-modal').classList.remove('active');
+        }
+
+        function renderManageList() {
+            const tbody = document.getElementById('manage-list');
+            const empty = document.getElementById('manage-empty');
+            const total = document.getElementById('manage-total');
+            
+            total.textContent = documents.length;
+            
+            if (documents.length === 0) {
+                tbody.classList.add('hidden');
+                empty.classList.remove('hidden');
+                return;
+            }
+            
+            tbody.classList.remove('hidden');
+            empty.classList.add('hidden');
+            
+            tbody.innerHTML = documents.map((doc, index) => {
+                const catInfo = categoryLabels[doc.category];
+                const displayName = doc.displayName || getDisplayName(doc.name);
+                const isDrive = doc.driveUrl ? true : false;
+                
+                return `
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-4 py-3">
+                            <div class="flex items-center gap-2">
+                                <i class="fas ${getFileIcon(doc.type)}"></i>
+                                <div>
+                                    <div class="font-medium text-sm">${displayName}</div>
+                                    <div class="text-xs text-gray-500">${doc.size}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-4 py-3">
+                            <span class="category-badge ${catInfo.color} text-xs">${catInfo.label}</span>
+                        </td>
+                        <td class="px-4 py-3">
+                            <span class="text-xs font-medium uppercase ${doc.type === 'video' ? 'text-purple-600' : (doc.type === 'pdf' ? 'text-red-600' : 'text-blue-600')}">${doc.type}</span>
+                        </td>
+                        <td class="px-4 py-3">
+                            ${isDrive ? 
+                                `<a href="${doc.driveUrl}" target="_blank" class="text-blue-600 hover:text-blue-800 text-xs flex items-center gap-1">
+                                    <i class="fab fa-google-drive"></i>
+                                    <span class="truncate max-w-[200px]">Mở Drive</span>
+                                </a>` : 
+                                '<span class="text-gray-400 text-xs">Local file</span>'
+                            }
+                        </td>
+                        <td class="px-4 py-3 text-xs text-gray-600">
+                            ${doc.startDate ? formatDateDisplay(doc.startDate) : 'N/A'}
+                        </td>
+                        <td class="px-4 py-3 text-center">
+                            <button onclick="deleteDocument(${index})" class="text-red-600 hover:text-red-800 text-sm">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function deleteDocument(index) {
+            if (confirm('Bạn có chắc muốn xóa tài liệu này?')) {
+                documents.splice(index, 1);
+                saveDocuments();
+                renderManageList();
+                updateStats();
+                renderDocuments(documents);
+                showNotification('Đã xóa tài liệu', 'success');
+            }
+        }
+
         function handleDriveAdd(e) {
             e.preventDefault();
             const errorDiv = document.getElementById('drive-error');
@@ -1168,6 +1336,11 @@
             showNotification('Đã thêm tài liệu từ Drive thành công!', 'success');
             updateStats();
             filterDocuments();
+            
+            // Refresh manage modal if open
+            if (document.getElementById('manage-modal').classList.contains('active')) {
+                renderManageList();
+            }
         }
 
         function convertDriveLinkToEmbed(url) {
@@ -1680,6 +1853,7 @@
                 closeTrainingModal();
                 closeScanModal();
                 closeDriveModal();
+                closeManageModal();
             }
         });
         
@@ -1691,6 +1865,11 @@
         // Close drive modal on click outside
         document.getElementById('drive-modal').addEventListener('click', (e) => {
             if (e.target.id === 'drive-modal') closeDriveModal();
+        });
+        
+        // Close manage modal on click outside
+        document.getElementById('manage-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'manage-modal') closeManageModal();
         });
         
         // Close training modal on click outside
@@ -1712,17 +1891,37 @@
             if (e.target.id === 'date-list-modal') closeDateListModal();
         });
 
-        // Initialize
-        updateStats();
-        updateTrainingProgress();
-        renderDocuments(documents);
-        
-        // Auto-check for new files if admin
-        setTimeout(() => {
-            if (isAdminLoggedIn) {
-                checkForNewFiles();
+        // Load documents from JSON file
+        async function loadDocumentsFromJSON() {
+            try {
+                const response = await fetch('./documents.json');
+                if (response.ok) {
+                    const jsonDocs = await response.json();
+                    documents = jsonDocs;
+                    console.log('Loaded', documents.length, 'documents from JSON');
+                } else {
+                    console.log('No documents.json found, using empty array');
+                }
+            } catch (error) {
+                console.log('Error loading documents.json:', error);
             }
-        }, 2000);
+        }
+
+        // Initialize
+        loadDocumentsFromJSON().then(() => {
+            // Load any saved documents from localStorage (new additions)
+            loadDocuments();
+            updateStats();
+            updateTrainingProgress();
+            renderDocuments(documents);
+            
+            // Auto-check for new files if admin
+            setTimeout(() => {
+                if (isAdminLoggedIn) {
+                    checkForNewFiles();
+                }
+            }, 2000);
+        });
     </script>
 </body>
 </html>
