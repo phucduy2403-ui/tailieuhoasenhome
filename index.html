@@ -1,0 +1,1728 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ thống Chính sách & Quy định KST - HSH</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1e40af;
+            --secondary: #3b82f6;
+            --accent: #f59e0b;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #b91c1c 0%, #7f1d1d 100%);
+            min-height: 100vh;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        .doc-card {
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+        .doc-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        .doc-card.pdf { border-left-color: #dc2626; }
+        .doc-card.word { border-left-color: #2563eb; }
+        .category-badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-weight: 600;
+        }
+        .search-box {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+        }
+        .search-box:focus {
+            outline: none;
+            border-color: white;
+            background: rgba(255, 255, 255, 0.3);
+        }
+        .viewer-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+        }
+        .viewer-modal.active {
+            display: flex;
+        }
+        .pdf-viewer {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .tab-btn {
+            transition: all 0.3s ease;
+        }
+        .tab-btn.active {
+            background: white;
+            color: var(--primary);
+        }
+        .stats-card {
+            background: linear-gradient(135deg, #b91c1c 0%, #7f1d1d 100%);
+        }
+        .login-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-modal.active {
+            display: flex;
+        }
+        .admin-badge {
+            background: linear-gradient(135deg, #b91c1c 0%, #7f1d1d 100%);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        .date-badge {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .admin-panel {
+            display: none;
+        }
+        .admin-panel.active {
+            display: block;
+        }
+        .date-filter-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 0.75rem;
+            align-items: end;
+        }
+        @media (max-width: 768px) {
+            .date-filter-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body class="p-4">
+    <!-- Login Gate Overlay - Blocks access until logged in -->
+    <div id="login-gate" class="fixed inset-0 z-[3000] bg-gradient-to-br from-red-800 via-red-700 to-yellow-700 flex items-center justify-center">
+        <div class="text-center max-w-md w-full mx-4">
+            <!-- Hoa Sen Home Logo -->
+            <div class="mb-6">
+                <!-- Để thay logo: Lưu file ảnh vào thư mục web-viewer với tên logo.png -->
+                <div class="w-36 h-36 mx-auto shadow-2xl rounded-full overflow-hidden border-4 border-yellow-400/50">
+                    <img src="logo.png" alt="Hoa Sen Home Logo" 
+                         class="w-full h-full object-cover"
+                         onerror="this.src='logo.jpg'; this.onerror=function(){this.style.display='none'; document.getElementById('fallback-logo').style.display='flex'}">
+                </div>
+                <!-- Fallback SVG nếu không có file ảnh -->
+                <div id="fallback-logo" class="hidden w-36 h-36 bg-gradient-to-br from-yellow-300 via-yellow-400 to-yellow-500 rounded-full items-center justify-center mx-auto shadow-2xl border-4 border-white/30">
+                    <i class="fas fa-home text-6xl text-red-700"></i>
+                </div>
+                <p class="mt-4 text-yellow-300 font-bold text-xl tracking-widest drop-shadow-lg">HOA SEN HOME</p>
+            </div>
+            
+            <h1 class="text-3xl font-bold text-white mb-2 drop-shadow-lg">Hệ thống Tài liệu KST</h1>
+            <p class="text-yellow-100 mb-6 font-medium">Hoa Sen Home - Chính sách & Quy định nội bộ</p>
+            
+            <!-- Login Form -->
+            <div class="glass-card p-8 bg-white/10 backdrop-blur-xl border border-white/20">
+                <h2 class="text-xl font-semibold text-red-800 mb-6 flex items-center justify-center gap-2">
+                    <i class="fas fa-lock text-red-600"></i>
+                    Đăng nhập hệ thống
+                </h2>
+                
+                <form onsubmit="handleGateLogin(event)">
+                    <div class="mb-4">
+                        <div class="relative">
+                            <i class="fas fa-user absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500"></i>
+                            <input type="text" id="gate-username" required
+                                   class="w-full pl-12 pr-4 py-4 rounded-xl bg-gray-50 border-2 border-gray-200 text-gray-800 placeholder-gray-500 focus:border-red-500 focus:outline-none transition"
+                                   placeholder="Tên đăng nhập">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <div class="relative">
+                            <i class="fas fa-lock absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500"></i>
+                            <input type="password" id="gate-password" required
+                                   class="w-full pl-12 pr-4 py-4 rounded-xl bg-gray-50 border-2 border-gray-200 text-gray-800 placeholder-gray-500 focus:border-red-500 focus:outline-none transition"
+                                   placeholder="Mật khẩu">
+                        </div>
+                    </div>
+                    
+                    <div id="gate-login-error" class="hidden mb-4 p-3 bg-red-100 border border-red-300 text-red-700 rounded-lg text-sm">
+                        <i class="fas fa-exclamation-circle mr-1"></i> Sai tên đăng nhập hoặc mật khẩu!
+                    </div>
+                    
+                    <button type="submit" 
+                            class="w-full py-4 bg-gradient-to-r from-red-700 via-red-600 to-yellow-500 hover:from-red-600 hover:via-red-500 hover:to-yellow-400 text-white rounded-xl transition font-bold text-lg shadow-xl transform hover:scale-[1.02]">
+                        <i class="fas fa-sign-in-alt mr-2"></i> Đăng nhập
+                    </button>
+                </form>
+            </div>
+            
+        </div>
+    </div>
+
+    <!-- Main Content (hidden until login) -->
+    <div id="main-content" class="max-w-7xl mx-auto hidden">
+        <!-- Header -->
+        <header class="glass-card p-6 mb-6">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="flex items-center gap-4">
+                    <!-- Logo nhỏ trong header -->
+                <div class="w-16 h-16 rounded-2xl overflow-hidden shadow-lg border-2 border-red-200 bg-white flex items-center justify-center">
+                    <img src="logo.png" alt="Logo" class="w-full h-full object-cover" 
+                         onerror="this.style.display='none'; document.getElementById('header-fallback').style.display='flex'">
+                    <div id="header-fallback" class="hidden w-full h-full bg-gradient-to-br from-yellow-300 to-yellow-500 items-center justify-center">
+                        <i class="fas fa-home text-2xl text-red-700"></i>
+                    </div>
+                </div>
+                    <div>
+                        <h1 class="text-2xl md:text-3xl font-bold text-gray-800">Hệ thống Chính sách & Quy định</h1>
+                        <p class="text-gray-600">KST - Hoa Sen Home (HSH)</p>
+                    </div>
+                </div>
+                <div class="flex gap-4 items-center">
+                    <div class="text-center px-4 py-2 bg-red-100 rounded-lg">
+                        <div class="text-2xl font-bold text-red-600" id="pdf-count">0</div>
+                        <div class="text-xs text-red-700">File PDF</div>
+                    </div>
+                    <div class="text-center px-4 py-2 bg-blue-100 rounded-lg">
+                        <div class="text-2xl font-bold text-blue-600" id="word-count">0</div>
+                        <div class="text-xs text-blue-700">File Word</div>
+                    </div>
+                    <div class="text-center px-4 py-2 bg-green-100 rounded-lg">
+                        <div class="text-2xl font-bold text-green-600" id="total-count">0</div>
+                        <div class="text-xs text-green-700">Tổng số</div>
+                    </div>
+                    <div id="admin-badge" class="admin-badge" style="background: linear-gradient(135deg, #b91c1c 0%, #7f1d1d 100%);">
+                        <i class="fas fa-user-shield mr-1"></i> Admin
+                    </div>
+                    <button onclick="fullLogout()" id="logout-btn" class="px-4 py-2 bg-gradient-to-r from-red-700 to-red-800 hover:from-red-600 hover:to-red-700 text-white rounded-lg transition flex items-center gap-2 shadow-lg">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Thoát</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Search & Filter -->
+        <div class="glass-card p-4 mb-4">
+            <div class="flex flex-col md:flex-row gap-4 mb-4">
+                <div class="relative flex-1">
+                    <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    <input type="text" id="search-input" placeholder="Tìm kiếm tài liệu..." 
+                           class="w-full pl-12 pr-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none">
+                </div>
+                <select id="category-filter" class="px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none">
+                    <option value="all">Tất cả danh mục</option>
+                    <option value="chinh-sach">Chính sách</option>
+                    <option value="bang-gia">Bảng giá</option>
+                    <option value="quy-dinh">Quy định</option>
+                    <option value="tai-lieu">Tài liệu đào tạo</option>
+                    <option value="linh-hoat">Linh hoạt</option>
+                </select>
+                <select id="type-filter" class="px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none">
+                    <option value="all">Tất cả định dạng</option>
+                    <option value="pdf">PDF</option>
+                    <option value="word">Word</option>
+                </select>
+            </div>
+            
+            <!-- Date Filter Row -->
+            <div class="date-filter-row border-t border-gray-200 pt-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-600 mb-1">
+                        <i class="fas fa-calendar-alt mr-1"></i> Từ ngày áp dụng
+                    </label>
+                    <input type="date" id="date-from" class="w-full px-3 py-2 rounded-lg border-2 border-gray-200 focus:border-blue-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-600 mb-1">
+                        <i class="fas fa-calendar-check mr-1"></i> Đến ngày áp dụng
+                    </label>
+                    <input type="date" id="date-to" class="w-full px-3 py-2 rounded-lg border-2 border-gray-200 focus:border-blue-500 focus:outline-none">
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="applyDateFilter()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition">
+                        <i class="fas fa-filter mr-1"></i> Lọc
+                    </button>
+                    <button onclick="clearDateFilter()" class="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition">
+                        <i class="fas fa-undo"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Admin Panel (hidden by default) -->
+        <div id="admin-panel" class="admin-panel glass-card p-4 mb-4 border-2 border-red-400">
+            <div class="flex items-center justify-between flex-wrap gap-3">
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-user-shield text-red-600 text-xl"></i>
+                    <span class="font-bold text-gray-800">Admin Panel</span>
+                    <span id="new-doc-badge" class="hidden px-2 py-1 bg-red-500 text-white text-xs rounded-full animate-pulse">
+                        <i class="fas fa-bell mr-1"></i><span id="new-doc-count">0</span> mới
+                    </span>
+                </div>
+                <div class="flex gap-3 flex-wrap">
+                    <button onclick="openDriveModal()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition text-sm font-medium">
+                        <i class="fab fa-google-drive mr-1"></i> Thêm từ Drive
+                    </button>
+                    <button onclick="scanForNewDocuments()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition text-sm">
+                        <i class="fas fa-sync-alt mr-1"></i> Quét thư mục
+                    </button>
+                    <button onclick="openUploadModal()" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition text-sm font-medium">
+                        <i class="fas fa-cloud-upload-alt mr-1"></i> Upload Local
+                    </button>
+                    <button onclick="exportDocumentList()" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition text-sm">
+                        <i class="fas fa-file-export mr-1"></i> Xuất danh sách
+                    </button>
+                    <button onclick="showAllDates()" class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg transition text-sm">
+                        <i class="fas fa-calendar-alt mr-1"></i> Xem ngày áp dụng
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Training Section Tabs -->
+        <div class="glass-card p-4 mb-4">
+            <div class="flex flex-wrap gap-2 border-b border-gray-200 pb-3 mb-4">
+                <button onclick="switchTab('all')" id="tab-all" class="tab-btn active px-4 py-2 rounded-lg font-medium transition bg-red-100 text-red-700">
+                    <i class="fas fa-th-large mr-1"></i> Tất cả tài liệu
+                </button>
+                <button onclick="switchTab('training')" id="tab-training" class="tab-btn px-4 py-2 rounded-lg font-medium transition text-gray-600 hover:bg-gray-100">
+                    <i class="fas fa-graduation-cap mr-1"></i> Đào tạo nhân sự
+                    <span id="training-badge" class="hidden ml-1 px-2 py-0.5 bg-red-500 text-white text-xs rounded-full"></span>
+                </button>
+                <button onclick="switchTab('new')" id="tab-new" class="tab-btn px-4 py-2 rounded-lg font-medium transition text-gray-600 hover:bg-gray-100">
+                    <i class="fas fa-sparkles mr-1"></i> Tài liệu mới
+                    <span id="new-badge" class="hidden ml-1 px-2 py-0.5 bg-orange-500 text-white text-xs rounded-full"></span>
+                </button>
+            </div>
+
+            <!-- Progress Bar for Training -->
+            <div id="training-progress" class="hidden mb-4">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm font-medium text-gray-700">
+                        <i class="fas fa-chart-line mr-1 text-blue-500"></i>
+                        Tiến độ đào tạo: <span id="progress-text">0/0</span> tài liệu
+                    </span>
+                    <span id="progress-percent" class="text-sm font-bold text-blue-600">0%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-3">
+                    <div id="progress-bar" class="bg-gradient-to-r from-blue-500 to-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+                <p class="text-xs text-gray-500 mt-1">
+                    <i class="fas fa-info-circle mr-1"></i>
+                    Đọc và xác nhận đã hiểu các tài liệu bắt buộc để hoàn thành đào tạo
+                </p>
+            </div>
+        </div>
+
+        <!-- Document Grid -->
+        <div id="document-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- Documents will be loaded here -->
+        </div>
+
+        <!-- Training Acknowledgment Modal -->
+        <div id="training-modal" class="login-modal">
+            <div class="glass-card p-6 max-w-lg w-full mx-4">
+                <div class="text-center mb-6">
+                    <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <i class="fas fa-graduation-cap text-3xl text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800">Xác nhận đào tạo</h3>
+                    <p class="text-gray-600 mt-1" id="training-doc-name">Tên tài liệu</p>
+                </div>
+                
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+                    <p class="text-sm text-gray-700">
+                        <i class="fas fa-exclamation-triangle text-yellow-600 mr-1"></i>
+                        Bằng việc xác nhận, bạn cam kết đã đọc và hiểu nội dung tài liệu này.
+                        Thông tin xác nhận sẽ được ghi nhận vào hệ thống.
+                    </p>
+                </div>
+
+                <div class="flex gap-3">
+                    <button onclick="closeTrainingModal()" 
+                            class="flex-1 px-4 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-xl transition font-medium">
+                        Đọc lại sau
+                    </button>
+                    <button onclick="acknowledgeDocument()" 
+                            class="flex-1 px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white rounded-xl transition font-medium shadow-lg">
+                        <i class="fas fa-check-circle mr-1"></i> Đã hiểu & Xác nhận
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scan Results Modal -->
+        <div id="scan-modal" class="login-modal">
+            <div class="glass-card p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-hidden flex flex-col">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+                        <i class="fas fa-search text-blue-600"></i>
+                        Kết quả quét thư mục
+                    </h3>
+                    <button onclick="closeScanModal()" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                <div id="scan-content" class="overflow-y-auto flex-1">
+                    <!-- Scan results will be populated here -->
+                </div>
+                <div class="mt-4 pt-4 border-t border-gray-200 flex gap-3">
+                    <button onclick="closeScanModal()" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition">
+                        Đóng
+                    </button>
+                    <button onclick="importAllNewDocs()" id="import-all-btn" class="hidden px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition">
+                        <i class="fas fa-plus mr-1"></i> Thêm tất cả vào hệ thống
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div id="empty-state" class="hidden glass-card p-12 text-center">
+            <i class="fab fa-google-drive text-6xl text-blue-400 mb-4"></i>
+            <h3 class="text-xl font-semibold text-gray-600 mb-2">Chưa có tài liệu nào</h3>
+            <p class="text-gray-500 mb-6">Admin cần thêm tài liệu từ Google Drive để bắt đầu</p>
+            <div id="admin-empty-actions" class="space-y-3">
+                <button onclick="openDriveModal()" class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition font-medium">
+                    <i class="fab fa-google-drive mr-2"></i>Thêm tài liệu từ Drive
+                </button>
+                <div class="text-sm text-gray-400">
+                    <p><i class="fas fa-info-circle mr-1"></i>Upload file lên Drive → Copy link → Thêm vào hệ thống</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <!-- Google Drive Add Modal (Admin only) -->
+    <div id="drive-modal" class="login-modal">
+        <div class="glass-card p-6 max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+                    <i class="fab fa-google-drive text-blue-600 text-2xl"></i>
+                    Thêm tài liệu từ Google Drive
+                </h3>
+                <button onclick="closeDriveModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <form id="drive-form" onsubmit="handleDriveAdd(event)">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Tên tài liệu <span class="text-red-500">*</span></label>
+                    <input type="text" id="drive-name" required
+                           class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none"
+                           placeholder="VD: Chính sách bán hàng Q1/2026">
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Danh mục <span class="text-red-500">*</span></label>
+                    <select id="drive-category" required
+                            class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none">
+                        <option value="">-- Chọn danh mục --</option>
+                        <option value="chinh-sach">Chính sách</option>
+                        <option value="bang-gia">Bảng giá</option>
+                        <option value="quy-dinh">Quy định</option>
+                        <option value="tai-lieu">Tài liệu đào tạo</option>
+                        <option value="video">Video</option>
+                        <option value="linh-hoat">Linh hoạt</option>
+                    </select>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Loại file <span class="text-red-500">*</span></label>
+                    <div class="flex gap-4">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="drive-type" value="pdf" checked class="text-blue-600">
+                            <span class="flex items-center gap-1"><i class="fas fa-file-pdf text-red-500"></i> PDF</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="drive-type" value="word" class="text-blue-600">
+                            <span class="flex items-center gap-1"><i class="fas fa-file-word text-blue-500"></i> Word</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="drive-type" value="video" class="text-blue-600">
+                            <span class="flex items-center gap-1"><i class="fas fa-video text-purple-500"></i> Video</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Link Google Drive <span class="text-red-500">*</span></label>
+                    <input type="url" id="drive-url" required
+                           class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none"
+                           placeholder="https://drive.google.com/file/d/.../view">
+                    <p class="text-xs text-gray-500 mt-1">
+                        <i class="fas fa-info-circle mr-1"></i> 
+                        <strong>Hướng dẫn:</strong> Mở file trên Drive → Click "Share" → "Copy link" → Paste vào đây
+                    </p>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Ngày áp dụng</label>
+                        <input type="date" id="drive-start-date"
+                               class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Ngày kết thúc</label>
+                        <input type="date" id="drive-end-date"
+                               class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none">
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Kích thước (tùy chọn)</label>
+                    <input type="text" id="drive-size"
+                           class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none"
+                           placeholder="VD: 2.5 MB, 150 MB...">
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Ghi chú</label>
+                    <textarea id="drive-note" rows="2"
+                              class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none resize-none"
+                              placeholder="Ghi chú thêm về tài liệu (tùy chọn)"></textarea>
+                </div>
+                
+                <div id="drive-error" class="hidden mb-4 p-3 bg-red-100 text-red-700 rounded-lg text-sm"></div>
+                
+                <div class="flex gap-3">
+                    <button type="button" onclick="closeDriveModal()" 
+                            class="flex-1 px-4 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-xl transition font-medium">
+                        Hủy
+                    </button>
+                    <button type="submit" 
+                            class="flex-1 px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white rounded-xl transition font-medium shadow-lg">
+                        <i class="fas fa-plus mr-1"></i> Thêm vào hệ thống
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Upload Modal (Admin only) -->
+    <div id="upload-modal" class="login-modal">
+        <div class="glass-card p-6 max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+                    <i class="fas fa-cloud-upload-alt text-red-600"></i>
+                    Upload tài liệu Local
+                </h3>
+                <button onclick="closeUploadModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <form id="upload-form" onsubmit="handleUpload(event)">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Tên tài liệu <span class="text-red-500">*</span></label>
+                    <input type="text" id="upload-name" required
+                           class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-red-500 focus:outline-none"
+                           placeholder="VD: Chính sách bán hàng Q1/2026">
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Danh mục <span class="text-red-500">*</span></label>
+                    <select id="upload-category" required
+                            class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-red-500 focus:outline-none">
+                        <option value="">-- Chọn danh mục --</option>
+                        <option value="chinh-sach">Chính sách</option>
+                        <option value="bang-gia">Bảng giá</option>
+                        <option value="quy-dinh">Quy định</option>
+                        <option value="tai-lieu">Tài liệu đào tạo</option>
+                        <option value="linh-hoat">Linh hoạt</option>
+                    </select>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Ngày áp dụng <span class="text-red-500">*</span></label>
+                        <input type="date" id="upload-start-date" required
+                               class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-red-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Ngày kết thúc</label>
+                        <input type="date" id="upload-end-date"
+                               class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-red-500 focus:outline-none">
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">File tài liệu <span class="text-red-500">*</span></label>
+                    <div class="relative">
+                        <input type="file" id="upload-file" required accept=".pdf,.doc,.docx"
+                               class="w-full px-4 py-3 rounded-xl border-2 border-dashed border-gray-300 hover:border-red-400 focus:border-red-500 focus:outline-none cursor-pointer bg-gray-50"
+                               onchange="updateFileInfo()">
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">
+                        <i class="fas fa-info-circle mr-1"></i> Chấp nhận file PDF, DOC, DOCX (tối đa 50MB)
+                    </p>
+                    <div id="file-info" class="hidden mt-2 p-2 bg-yellow-50 rounded-lg text-sm">
+                        <i class="fas fa-file text-yellow-600 mr-1"></i>
+                        <span id="file-name" class="font-medium"></span>
+                        <span id="file-size" class="text-gray-500 ml-1"></span>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Ghi chú</label>
+                    <textarea id="upload-note" rows="2"
+                              class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-red-500 focus:outline-none resize-none"
+                              placeholder="Ghi chú thêm về tài liệu (tùy chọn)"></textarea>
+                </div>
+                
+                <div id="upload-error" class="hidden mb-4 p-3 bg-red-100 text-red-700 rounded-lg text-sm"></div>
+                
+                <div class="flex gap-3">
+                    <button type="button" onclick="closeUploadModal()" 
+                            class="flex-1 px-4 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-xl transition font-medium">
+                        Hủy
+                    </button>
+                    <button type="submit" 
+                            class="flex-1 px-4 py-3 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white rounded-xl transition font-medium shadow-lg">
+                        <i class="fas fa-upload mr-1"></i> Upload Local
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Date List Modal (Admin only) -->
+    <div id="date-list-modal" class="login-modal">
+        <div class="glass-card p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-hidden flex flex-col">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-gray-800">
+                    <i class="fas fa-calendar-alt mr-2 text-red-500"></i>
+                    Danh sách ngày áp dụng chính sách
+                </h3>
+                <button onclick="closeDateListModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div id="date-list-content" class="overflow-y-auto flex-1">
+                <!-- Date list will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- PDF Viewer Modal -->
+    <div id="viewer-modal" class="viewer-modal">
+        <div class="flex flex-col w-full h-full">
+            <div class="bg-gray-900 text-white p-4 flex justify-between items-center">
+                <div class="flex items-center gap-4">
+                    <h3 id="viewer-title" class="text-lg font-semibold"></h3>
+                    <span id="viewer-type" class="px-3 py-1 rounded-full text-xs font-bold"></span>
+                </div>
+                <div class="flex gap-2">
+                    <a id="download-btn" href="#" download class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition">
+                        <i class="fas fa-download mr-2"></i>Tải xuống
+                    </a>
+                    <button onclick="closeViewer()" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition">
+                        <i class="fas fa-times mr-2"></i>Đóng
+                    </button>
+                </div>
+            </div>
+            <div class="flex-1 bg-gray-800">
+                <iframe id="pdf-viewer" class="pdf-viewer"></iframe>
+                <div id="word-notice" class="hidden h-full flex items-center justify-center text-white">
+                    <div class="text-center">
+                        <i class="fas fa-file-word text-6xl text-blue-400 mb-4"></i>
+                        <p class="text-xl mb-4">File Word không thể xem trực tiếp</p>
+                        <a id="word-download-btn" href="#" download class="px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg transition">
+                            <i class="fas fa-download mr-2"></i>Tải xuống file
+                        </a>
+                    </div>
+                </div>
+                <div id="drive-notice" class="hidden h-full flex items-center justify-center text-white">
+                    <div class="text-center">
+                        <i class="fab fa-google-drive text-6xl text-blue-400 mb-4"></i>
+                        <p class="text-xl mb-4">Tài liệu lưu trên Google Drive</p>
+                        <a id="drive-open-btn" href="#" target="_blank" class="px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg transition inline-block">
+                            <i class="fas fa-external-link-alt mr-2"></i>Mở trên Drive
+                        </a>
+                    </div>
+                </div>
+                <div id="video-notice" class="hidden h-full flex items-center justify-center text-white">
+                    <div class="text-center">
+                        <i class="fas fa-video text-6xl text-purple-400 mb-4"></i>
+                        <p class="text-xl mb-4">Video trên Google Drive</p>
+                        <a id="video-open-btn" href="#" target="_blank" class="px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-lg transition inline-block">
+                            <i class="fas fa-play mr-2"></i>Xem video
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Document data - will be populated from Google Drive
+        const documents = [];
+
+        const categoryLabels = {
+            'chinh-sach': { label: 'Chính sách', color: 'bg-green-100 text-green-700' },
+            'bang-gia': { label: 'Bảng giá', color: 'bg-yellow-100 text-yellow-700' },
+            'quy-dinh': { label: 'Quy định', color: 'bg-red-100 text-red-700' },
+            'tai-lieu': { label: 'Tài liệu đào tạo', color: 'bg-purple-100 text-purple-700' },
+            'video': { label: 'Video', color: 'bg-pink-100 text-pink-700' },
+            'linh-hoat': { label: 'Linh hoạt', color: 'bg-blue-100 text-blue-700' }
+        };
+
+        function getDisplayName(filename) {
+            // Remove date patterns and translator names
+            let display = filename
+                .replace(/\.pdf$/i, '')
+                .replace(/\.docx$/i, '')
+                .replace(/\s*-\s*Tr\.?\s*\.?\s*khai/i, '')
+                .replace(/\s*-\s*tr\.?\s*\.?\s*khai/i, '')
+                .replace(/\s*-\s*Trkhai/i, '')
+                .replace(/\s*01\.\d{2}\.\d{4}/g, '')
+                .replace(/\s*\d{2}\.\d{2}\.\d{4}/g, '')
+                .replace(/\s*\(\d+\)/g, '')
+                .replace(/^\d+\.\s*/, '')
+                .trim();
+            return display;
+        }
+
+        // Extract date from filename
+        function extractDate(filename) {
+            // Match patterns like DD.MM.YYYY or YYYY-MM-DD
+            const patterns = [
+                /(\d{2})\.(\d{2})\.(\d{4})/,  // DD.MM.YYYY
+                /(\d{4})-(\d{2})-(\d{2})/,     // YYYY-MM-DD
+                /(\d{2})-(\d{2})-(\d{4})/,     // DD-MM-YYYY
+            ];
+            
+            for (const pattern of patterns) {
+                const match = filename.match(pattern);
+                if (match) {
+                    // Return as YYYY-MM-DD for comparison
+                    if (match[0].includes('-') && match[1].length === 4) {
+                        return `${match[1]}-${match[2]}-${match[3]}`;
+                    } else if (match[0].includes('.')) {
+                        return `${match[3]}-${match[2]}-${match[1]}`;
+                    } else {
+                        return `${match[3]}-${match[2]}-${match[1]}`;
+                    }
+                }
+            }
+            return null;
+        }
+
+        function formatDateDisplay(dateStr) {
+            if (!dateStr) return null;
+            const [year, month, day] = dateStr.split('-');
+            return `${day}/${month}/${year}`;
+        }
+
+        // Admin credentials (in production, this should be server-side)
+        const ADMIN_USERNAME = 'admin';
+        const ADMIN_PASSWORD = 'admin123';
+        let isAdminLoggedIn = false;
+        let currentUser = null;
+        let currentTab = 'all';
+        let currentTrainingDoc = null;
+        let scannedNewDocs = [];
+        
+        // Training configuration - which categories are required for training
+        const trainingCategories = ['chinh-sach', 'quy-dinh', 'tai-lieu'];
+        
+        // Marked documents storage
+        function getAcknowledgedDocs() {
+            const key = currentUser ? `acknowledged_${currentUser}` : 'acknowledged_docs';
+            const saved = localStorage.getItem(key);
+            return saved ? JSON.parse(saved) : [];
+        }
+        
+        function acknowledgeDocument() {
+            if (!currentTrainingDoc) return;
+            
+            const acknowledged = getAcknowledgedDocs();
+            if (!acknowledged.includes(currentTrainingDoc)) {
+                acknowledged.push(currentTrainingDoc);
+                const key = currentUser ? `acknowledged_${currentUser}` : 'acknowledged_docs';
+                localStorage.setItem(key, JSON.stringify(acknowledged));
+            }
+            
+            closeTrainingModal();
+            showNotification('Đã xác nhận hoàn thành tài liệu!', 'success');
+            updateTrainingProgress();
+            
+            // Refresh view if in training tab
+            if (currentTab === 'training') {
+                filterDocuments();
+            }
+        }
+        
+        function isDocumentAcknowledged(docName) {
+            return getAcknowledgedDocs().includes(docName);
+        }
+        
+        function switchTab(tab) {
+            currentTab = tab;
+            
+            // Update tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active', 'bg-red-100', 'text-red-700');
+                btn.classList.add('text-gray-600');
+            });
+            
+            const activeBtn = document.getElementById(`tab-${tab}`);
+            activeBtn.classList.add('active', 'bg-red-100', 'text-red-700');
+            activeBtn.classList.remove('text-gray-600');
+            
+            // Show/hide training progress
+            const progressDiv = document.getElementById('training-progress');
+            if (tab === 'training') {
+                progressDiv.classList.remove('hidden');
+                updateTrainingProgress();
+            } else {
+                progressDiv.classList.add('hidden');
+            }
+            
+            filterDocuments();
+        }
+        
+        function updateTrainingProgress() {
+            const trainingDocs = documents.filter(d => trainingCategories.includes(d.category));
+            const acknowledged = getAcknowledgedDocs();
+            const completed = trainingDocs.filter(d => acknowledged.includes(d.name)).length;
+            const total = trainingDocs.length;
+            const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
+            
+            document.getElementById('progress-text').textContent = `${completed}/${total}`;
+            document.getElementById('progress-percent').textContent = `${percent}%`;
+            document.getElementById('progress-bar').style.width = `${percent}%`;
+            
+            // Update badge
+            const remaining = total - completed;
+            const badge = document.getElementById('training-badge');
+            if (remaining > 0) {
+                badge.textContent = remaining;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+            
+            return { completed, total, percent };
+        }
+        
+        function openTrainingModal(docName) {
+            currentTrainingDoc = docName;
+            const doc = documents.find(d => d.name === docName);
+            document.getElementById('training-doc-name').textContent = doc ? (doc.displayName || getDisplayName(docName)) : docName;
+            document.getElementById('training-modal').classList.add('active');
+        }
+        
+        function closeTrainingModal() {
+            document.getElementById('training-modal').classList.remove('active');
+            currentTrainingDoc = null;
+        }
+        
+        // Auto-scan for new documents
+        async function scanForNewDocuments() {
+            if (!isAdminLoggedIn) {
+                showNotification('Chỉ admin có thể quét thư mục!', 'error');
+                return;
+            }
+            
+            showNotification('Đang quét thư mục...', 'info');
+            
+            // In a real app, this would scan the server directory
+            // For client-side, we'll simulate by checking file API if available
+            // or just show a prompt for manual addition
+            
+            try {
+                // Check if File System Access API is available
+                if ('showDirectoryPicker' in window) {
+                    const dirHandle = await window.showDirectoryPicker();
+                    scannedNewDocs = [];
+                    
+                    for await (const entry of dirHandle.values()) {
+                        if (entry.kind === 'file' && (entry.name.endsWith('.pdf') || entry.name.endsWith('.docx') || entry.name.endsWith('.doc'))) {
+                            // Check if already exists
+                            const exists = documents.some(d => d.name === entry.name);
+                            if (!exists) {
+                                scannedNewDocs.push({
+                                    name: entry.name,
+                                    handle: entry,
+                                    isNew: true
+                                });
+                            }
+                        }
+                    }
+                    
+                    showScanResults();
+                } else {
+                    // Fallback: Show manual add dialog
+                    showManualScanDialog();
+                }
+            } catch (err) {
+                console.error('Scan error:', err);
+                showManualScanDialog();
+            }
+        }
+        
+        function showManualScanDialog() {
+            document.getElementById('scan-content').innerHTML = `
+                <div class="text-center py-8">
+                    <i class="fas fa-folder-open text-5xl text-gray-300 mb-4"></i>
+                    <p class="text-gray-600 mb-4">Trình duyệt không hỗ trợ quét thư mục tự động.</p>
+                    <p class="text-sm text-gray-500">Vui lòng sử dụng nút "Upload tài liệu" để thêm tài liệu mới vào hệ thống.</p>
+                </div>
+            `;
+            document.getElementById('import-all-btn').classList.add('hidden');
+            document.getElementById('scan-modal').classList.add('active');
+        }
+        
+        function showScanResults() {
+            const content = document.getElementById('scan-content');
+            
+            if (scannedNewDocs.length === 0) {
+                content.innerHTML = `
+                    <div class="text-center py-8">
+                        <i class="fas fa-check-circle text-5xl text-green-500 mb-4"></i>
+                        <p class="text-gray-700 font-medium">Không phát hiện tài liệu mới!</p>
+                        <p class="text-sm text-gray-500 mt-2">Tất cả tài liệu trong thư mục đã có trong hệ thống.</p>
+                    </div>
+                `;
+                document.getElementById('import-all-btn').classList.add('hidden');
+            } else {
+                content.innerHTML = `
+                    <p class="text-gray-700 mb-4">Phát hiện <strong>${scannedNewDocs.length}</strong> tài liệu mới:</p>
+                    <div class="space-y-2">
+                        ${scannedNewDocs.map((doc, idx) => `
+                            <div class="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg">
+                                <div class="flex items-center gap-3">
+                                    <i class="fas ${doc.name.endsWith('.pdf') ? 'fa-file-pdf text-red-500' : 'fa-file-word text-blue-500'} text-xl"></i>
+                                    <span class="font-medium text-gray-800">${doc.name}</span>
+                                </div>
+                                <button onclick="addScannedDoc(${idx})" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm">
+                                    <i class="fas fa-plus mr-1"></i> Thêm
+                                </button>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                document.getElementById('import-all-btn').classList.remove('hidden');
+                
+                // Update new document badge
+                const badge = document.getElementById('new-doc-badge');
+                const count = document.getElementById('new-doc-count');
+                const newBadge = document.getElementById('new-badge');
+                count.textContent = scannedNewDocs.length;
+                badge.classList.remove('hidden');
+                newBadge.textContent = scannedNewDocs.length;
+                newBadge.classList.remove('hidden');
+            }
+            
+            document.getElementById('scan-modal').classList.add('active');
+        }
+        
+        function closeScanModal() {
+            document.getElementById('scan-modal').classList.remove('active');
+        }
+        
+        async function addScannedDoc(index) {
+            const scanned = scannedNewDocs[index];
+            // Get file info
+            const file = await scanned.handle.getFile();
+            const ext = file.name.split('.').pop().toLowerCase();
+            const type = ext === 'pdf' ? 'pdf' : 'word';
+            const size = file.size < 1024 * 1024 
+                ? (file.size / 1024).toFixed(0) + ' KB'
+                : (file.size / (1024 * 1024)).toFixed(1) + ' MB';
+            
+            // Detect category from filename
+            let category = 'linh-hoat';
+            const lowerName = file.name.toLowerCase();
+            if (lowerName.includes('chinh sach') || lowerName.includes('chính sách')) category = 'chinh-sach';
+            else if (lowerName.includes('quy dinh') || lowerName.includes('quy định')) category = 'quy-dinh';
+            else if (lowerName.includes('bang gia') || lowerName.includes('bảng giá')) category = 'bang-gia';
+            else if (lowerName.includes('dao tao') || lowerName.includes('đào tạo')) category = 'tai-lieu';
+            
+            // Extract date from filename
+            const dateMatch = file.name.match(/(\d{2})[.](\d{2})[.](\d{4})/);
+            const startDate = dateMatch ? `${dateMatch[3]}-${dateMatch[2]}-${dateMatch[1]}` : null;
+            
+            const newDoc = {
+                name: file.name,
+                displayName: file.name.replace(/\.[^/.]+$/, ''),
+                category: category,
+                type: type,
+                size: size,
+                startDate: startDate,
+                endDate: null,
+                note: 'Tự động quét từ thư mục',
+                uploadDate: new Date().toISOString().split('T')[0],
+                isNew: true
+            };
+            
+            documents.push(newDoc);
+            saveDocuments();
+            
+            // Remove from scanned list
+            scannedNewDocs.splice(index, 1);
+            showScanResults();
+            updateStats();
+            filterDocuments();
+            
+            showNotification(`Đã thêm: ${file.name}`, 'success');
+        }
+        
+        function importAllNewDocs() {
+            let added = 0;
+            const toAdd = [...scannedNewDocs];
+            toAdd.forEach((doc, idx) => {
+                addScannedDoc(idx);
+                added++;
+            });
+            
+            scannedNewDocs = [];
+            closeScanModal();
+            showNotification(`Đã thêm ${added} tài liệu mới vào hệ thống!`, 'success');
+            
+            // Clear new badges
+            document.getElementById('new-doc-badge').classList.add('hidden');
+        }
+        
+        // Periodic auto-scan (every 5 minutes for admin)
+        function startAutoScan() {
+            if (isAdminLoggedIn) {
+                // Check for new files in background
+                checkForNewFiles();
+            }
+        }
+        
+        function checkForNewFiles() {
+            // This would check server-side or localStorage for updates
+            // For now, just check if there are documents marked as 'isNew' that haven't been seen
+            const newDocs = documents.filter(d => d.isNew && !getAcknowledgedDocs().includes(d.name));
+            if (newDocs.length > 0 && isAdminLoggedIn) {
+                const badge = document.getElementById('new-doc-badge');
+                const count = document.getElementById('new-doc-count');
+                count.textContent = newDocs.length;
+                badge.classList.remove('hidden');
+            }
+        }
+
+        function openLoginModal() {
+            document.getElementById('login-modal').classList.add('active');
+            document.getElementById('login-error').classList.add('hidden');
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            document.getElementById('username').focus();
+        }
+
+        function closeLoginModal() {
+            document.getElementById('login-modal').classList.remove('active');
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+                isAdminLoggedIn = true;
+                closeLoginModal();
+                updateAdminUI();
+            } else {
+                document.getElementById('login-error').classList.remove('hidden');
+            }
+        }
+
+        function logout() {
+            isAdminLoggedIn = false;
+            updateAdminUI();
+        }
+
+        function updateAdminUI() {
+            const adminBadge = document.getElementById('admin-badge');
+            const logoutBtn = document.getElementById('logout-btn');
+            const adminPanel = document.getElementById('admin-panel');
+            
+            // Always show admin features since we're already logged in
+            adminBadge.classList.remove('hidden');
+            logoutBtn.classList.remove('hidden');
+            adminPanel.classList.add('active');
+        }
+
+        function applyDateFilter() {
+            filterDocuments();
+        }
+
+        function clearDateFilter() {
+            document.getElementById('date-from').value = '';
+            document.getElementById('date-to').value = '';
+            filterDocuments();
+        }
+
+        // Upload modal functions
+        function openUploadModal() {
+            if (!isAdminLoggedIn) return;
+            document.getElementById('upload-modal').classList.add('active');
+            document.getElementById('upload-form').reset();
+            document.getElementById('file-info').classList.add('hidden');
+            document.getElementById('upload-error').classList.add('hidden');
+            // Set default start date to today
+            document.getElementById('upload-start-date').value = new Date().toISOString().split('T')[0];
+        }
+
+        function closeUploadModal() {
+            document.getElementById('upload-modal').classList.remove('active');
+        }
+
+        // Google Drive functions
+        function openDriveModal() {
+            if (!isAdminLoggedIn) return;
+            document.getElementById('drive-modal').classList.add('active');
+            document.getElementById('drive-form').reset();
+            document.getElementById('drive-error').classList.add('hidden');
+        }
+
+        function closeDriveModal() {
+            document.getElementById('drive-modal').classList.remove('active');
+        }
+
+        function handleDriveAdd(e) {
+            e.preventDefault();
+            const errorDiv = document.getElementById('drive-error');
+            
+            const name = document.getElementById('drive-name').value;
+            const category = document.getElementById('drive-category').value;
+            const type = document.querySelector('input[name="drive-type"]:checked').value;
+            const driveUrl = document.getElementById('drive-url').value;
+            const startDate = document.getElementById('drive-start-date').value;
+            const endDate = document.getElementById('drive-end-date').value;
+            const size = document.getElementById('drive-size').value || 'N/A';
+            const note = document.getElementById('drive-note').value;
+            
+            // Validation
+            if (!driveUrl.includes('drive.google.com')) {
+                errorDiv.textContent = 'Vui lòng nhập link Google Drive hợp lệ!';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+            
+            if (endDate && startDate > endDate) {
+                errorDiv.textContent = 'Ngày kết thúc phải sau ngày áp dụng!';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+            
+            // Create new document object
+            const newDoc = {
+                name: name + (type === 'video' ? '.mp4' : type === 'pdf' ? '.pdf' : '.docx'),
+                displayName: name,
+                category: category,
+                type: type === 'video' ? 'video' : type,
+                size: size,
+                startDate: startDate,
+                endDate: endDate,
+                note: note,
+                driveUrl: driveUrl,
+                uploadDate: new Date().toISOString().split('T')[0],
+                isNew: true
+            };
+            
+            // Add to documents array
+            documents.push(newDoc);
+            saveDocuments();
+            
+            errorDiv.classList.add('hidden');
+            closeDriveModal();
+            
+            showNotification('Đã thêm tài liệu từ Drive thành công!', 'success');
+            updateStats();
+            filterDocuments();
+        }
+
+        function convertDriveLinkToEmbed(url) {
+            // Convert various Google Drive link formats to embed/preview format
+            // https://drive.google.com/file/d/FILE_ID/view -> https://drive.google.com/file/d/FILE_ID/preview
+            // https://drive.google.com/open?id=FILE_ID -> https://drive.google.com/file/d/FILE_ID/preview
+            
+            let fileId = null;
+            
+            // Format: /file/d/FILE_ID/view
+            const fileMatch = url.match(/\/file\/d\/([^\/]+)/);
+            if (fileMatch) {
+                fileId = fileMatch[1];
+            }
+            
+            // Format: ?id=FILE_ID or ?open?id=FILE_ID
+            const idMatch = url.match(/[?&]id=([^&]+)/);
+            if (idMatch) {
+                fileId = idMatch[1];
+            }
+            
+            if (fileId) {
+                return `https://drive.google.com/file/d/${fileId}/preview`;
+            }
+            
+            return url;
+        }
+
+        function updateFileInfo() {
+            const fileInput = document.getElementById('upload-file');
+            const file = fileInput.files[0];
+            if (file) {
+                document.getElementById('file-name').textContent = file.name;
+                const size = file.size < 1024 * 1024 
+                    ? (file.size / 1024).toFixed(1) + ' KB'
+                    : (file.size / (1024 * 1024)).toFixed(1) + ' MB';
+                document.getElementById('file-size').textContent = `(${size})`;
+                document.getElementById('file-info').classList.remove('hidden');
+            }
+        }
+
+        function handleUpload(e) {
+            e.preventDefault();
+            const errorDiv = document.getElementById('upload-error');
+            
+            const name = document.getElementById('upload-name').value;
+            const category = document.getElementById('upload-category').value;
+            const startDate = document.getElementById('upload-start-date').value;
+            const endDate = document.getElementById('upload-end-date').value;
+            const fileInput = document.getElementById('upload-file');
+            const note = document.getElementById('upload-note').value;
+            
+            // Validation
+            if (endDate && startDate > endDate) {
+                errorDiv.textContent = 'Ngày kết thúc phải sau ngày áp dụng!';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+            
+            const file = fileInput.files[0];
+            if (!file) {
+                errorDiv.textContent = 'Vui lòng chọn file tài liệu!';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+            
+            // Check file size (50MB limit)
+            if (file.size > 50 * 1024 * 1024) {
+                errorDiv.textContent = 'File quá lớn! Tối đa 50MB.';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+            
+            // Get file type
+            const ext = file.name.split('.').pop().toLowerCase();
+            const type = ext === 'pdf' ? 'pdf' : 'word';
+            
+            // Format size
+            const size = file.size < 1024 * 1024 
+                ? (file.size / 1024).toFixed(0) + ' KB'
+                : (file.size / (1024 * 1024)).toFixed(1) + ' MB';
+            
+            // Generate filename with date
+            const dateStr = startDate ? formatDateForFilename(startDate) : '';
+            const filename = dateStr 
+                ? `${name} ${dateStr}.${ext}`
+                : `${name}.${ext}`;
+            
+            // Create new document object
+            const newDoc = {
+                name: filename,
+                displayName: name,
+                category: category,
+                type: type,
+                size: size,
+                startDate: startDate,
+                endDate: endDate,
+                note: note,
+                uploadDate: new Date().toISOString().split('T')[0]
+            };
+            
+            // Add to documents array
+            documents.push(newDoc);
+            
+            // Save to localStorage (simulate persistence)
+            saveDocuments();
+            
+            // Show success and refresh
+            errorDiv.classList.add('hidden');
+            closeUploadModal();
+            
+            // Show notification
+            showNotification('Tài liệu đã được upload thành công!', 'success');
+            
+            // Refresh display
+            updateStats();
+            filterDocuments();
+        }
+
+        function formatDateForFilename(dateStr) {
+            const [year, month, day] = dateStr.split('-');
+            return `${day}.${month}.${year}`;
+        }
+
+        function saveDocuments() {
+            // In a real app, this would save to a server
+            // For now, we just keep it in memory
+            localStorage.setItem('kst_documents', JSON.stringify(documents));
+        }
+
+        function loadDocuments() {
+            const saved = localStorage.getItem('kst_documents');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    // Merge with default documents (avoid duplicates)
+                    const existingNames = new Set(documents.map(d => d.name));
+                    parsed.forEach(d => {
+                        if (!existingNames.has(d.name)) {
+                            documents.push(d);
+                        }
+                    });
+                } catch (e) {
+                    console.error('Failed to load saved documents', e);
+                }
+            }
+        }
+
+        function showNotification(message, type = 'info') {
+            const notif = document.createElement('div');
+            const bgColor = type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500';
+            notif.className = `fixed top-4 right-4 ${bgColor} text-white px-6 py-3 rounded-xl shadow-2xl z-[4000] transform translate-x-full transition-transform duration-300`;
+            notif.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-info-circle'} mr-2"></i>${message}`;
+            document.body.appendChild(notif);
+            
+            setTimeout(() => notif.classList.remove('translate-x-full'), 100);
+            setTimeout(() => {
+                notif.classList.add('translate-x-full');
+                setTimeout(() => notif.remove(), 300);
+            }, 3000);
+        }
+
+        function updateStats() {
+            document.getElementById('pdf-count').textContent = documents.filter(d => d.type === 'pdf').length;
+            document.getElementById('word-count').textContent = documents.filter(d => d.type === 'word').length;
+            document.getElementById('total-count').textContent = documents.length;
+        }
+
+        function showAllDates() {
+            if (!isAdminLoggedIn) return;
+            
+            const dateMap = new Map();
+            documents.forEach(doc => {
+                const date = doc.startDate || extractDate(doc.name);
+                if (date) {
+                    if (!dateMap.has(date)) {
+                        dateMap.set(date, []);
+                    }
+                    dateMap.get(date).push(doc);
+                }
+            });
+            
+            const sortedDates = Array.from(dateMap.entries()).sort((a, b) => b[0].localeCompare(a[0]));
+            
+            const content = document.getElementById('date-list-content');
+            content.innerHTML = sortedDates.map(([date, docs]) => `
+                <div class="mb-4 border-b border-gray-200 pb-3">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="date-badge">${formatDateDisplay(date)}</span>
+                        <span class="text-sm text-gray-600">(${docs.length} tài liệu)</span>
+                    </div>
+                    <div class="pl-4 space-y-1">
+                        ${docs.map(d => {
+                            const isExpired = d.endDate && new Date() > new Date(d.endDate);
+                            return `
+                            <div class="text-sm text-gray-700 flex items-center gap-2 ${isExpired ? 'opacity-60' : ''}">
+                                <i class="fas ${d.type === 'pdf' ? 'fa-file-pdf text-red-400' : 'fa-file-word text-blue-400'} text-xs"></i>
+                                <span class="truncate ${isExpired ? 'line-through' : ''}">${d.displayName || getDisplayName(d.name)}</span>
+                                ${d.endDate ? `<span class="text-xs ${isExpired ? 'text-gray-400' : 'text-orange-500'}">→ ${formatDateDisplay(d.endDate)}</span>` : ''}
+                            </div>
+                        `}).join('')}
+                    </div>
+                </div>
+            `).join('');
+            
+            document.getElementById('date-list-modal').classList.add('active');
+        }
+
+        function closeDateListModal() {
+            document.getElementById('date-list-modal').classList.remove('active');
+        }
+
+        function exportDocumentList() {
+            if (!isAdminLoggedIn) return;
+            
+            let csv = 'Tên tài liệu,Danh mục,Loại,Ngày áp dụng,Ngày kết thúc,Kích thước,Ghi chú\n';
+            documents.forEach(doc => {
+                const startDate = doc.startDate || extractDate(doc.name);
+                const endDate = doc.endDate;
+                const catInfo = categoryLabels[doc.category];
+                const displayName = doc.displayName || getDisplayName(doc.name);
+                csv += `"${displayName}","${catInfo.label}","${doc.type.toUpperCase()}","${startDate ? formatDateDisplay(startDate) : 'N/A'}","${endDate ? formatDateDisplay(endDate) : 'Không giới hạn'}","${doc.size}","${doc.note || ''}"\n`;
+            });
+            
+            const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `danh-sach-tai-lieu-${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+        }
+
+        function getFileIcon(type) {
+            if (type === 'pdf') return 'fa-file-pdf text-red-500';
+            if (type === 'video') return 'fa-video text-purple-500';
+            return 'fa-file-word text-blue-500';
+        }
+
+        function renderDocuments(docs) {
+            const grid = document.getElementById('document-grid');
+            const emptyState = document.getElementById('empty-state');
+            const adminActions = document.getElementById('admin-empty-actions');
+            
+            // Filter based on current tab
+            let filteredDocs = docs;
+            if (currentTab === 'training') {
+                filteredDocs = docs.filter(d => trainingCategories.includes(d.category));
+            } else if (currentTab === 'new') {
+                filteredDocs = docs.filter(d => d.isNew);
+            }
+            
+            if (filteredDocs.length === 0) {
+                grid.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                
+                // Show admin actions only if admin and no documents at all
+                if (isAdminLoggedIn && docs.length === 0) {
+                    adminActions.classList.remove('hidden');
+                } else {
+                    adminActions.classList.add('hidden');
+                }
+                return;
+            }
+            
+            grid.classList.remove('hidden');
+            emptyState.classList.add('hidden');
+            grid.innerHTML = filteredDocs.map(doc => {
+                const catInfo = categoryLabels[doc.category];
+                const displayName = doc.displayName || getDisplayName(doc.name);
+                const docDate = doc.startDate || extractDate(doc.name);
+                const endDate = doc.endDate;
+                const isExpired = endDate && new Date() > new Date(endDate);
+                const isAcknowledged = isDocumentAcknowledged(doc.name);
+                const isTrainingDoc = trainingCategories.includes(doc.category);
+                
+                // Different click behavior based on tab
+                let clickAction = `onclick="openViewer('${doc.name}', '${doc.type}')"`;
+                let cardClass = `cursor-pointer ${isExpired ? 'opacity-60' : ''}`;
+                
+                // For training tab, show acknowledge button
+                let trainingButtons = '';
+                if (currentTab === 'training' && isTrainingDoc && !isAcknowledged && !isExpired) {
+                    trainingButtons = `
+                        <button onclick="event.stopPropagation(); openTrainingModal('${doc.name}')" 
+                                class="mt-2 w-full py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-400 hover:to-blue-500 text-white rounded-lg text-sm font-medium transition shadow-md">
+                            <i class="fas fa-check-circle mr-1"></i> Xác nhận đã đọc
+                        </button>
+                    `;
+                    cardClass = ''; // Remove cursor-pointer since we have a button
+                }
+                
+                // Show acknowledged status
+                let statusBadge = '';
+                if (isTrainingDoc && isAcknowledged) {
+                    statusBadge = `<span class="text-xs px-2 py-1 rounded-md bg-green-100 text-green-700"><i class="fas fa-check mr-1"></i>Đã xác nhận</span>`;
+                } else if (doc.isNew) {
+                    statusBadge = `<span class="text-xs px-2 py-1 rounded-md bg-orange-100 text-orange-700"><i class="fas fa-sparkles mr-1"></i>Mới</span>`;
+                }
+                
+                return `
+                    <div class="glass-card doc-card ${doc.type} p-4 ${cardClass}">
+                        <div ${clickAction}>
+                            <div class="flex items-start gap-3">
+                                <div class="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center flex-shrink-0">
+                                    <i class="fas ${getFileIcon(doc.type)} text-2xl ${isExpired ? 'text-gray-400' : (isAcknowledged ? 'text-green-500' : '')}"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <h3 class="font-semibold text-gray-800 text-sm leading-tight mb-1 truncate ${isExpired ? 'line-through text-gray-500' : (isAcknowledged ? 'text-green-700' : '')}" title="${displayName}">
+                                        ${displayName}
+                                    </h3>
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <span class="category-badge ${catInfo.color}">${catInfo.label}</span>
+                                        ${docDate ? `<span class="date-badge">Áp dụng: ${formatDateDisplay(docDate)}</span>` : ''}
+                                        ${endDate ? `<span class="text-xs px-2 py-1 rounded-md ${isExpired ? 'bg-gray-200 text-gray-500' : 'bg-orange-100 text-orange-700'}">${isExpired ? 'Đã hết hạn' : 'Hết hạn: ' + formatDateDisplay(endDate)}</span>` : ''}
+                                        ${statusBadge}
+                                        <span class="text-xs text-gray-500">${doc.size}</span>
+                                    </div>
+                                    ${doc.note ? `<p class="text-xs text-gray-500 mt-1 truncate"><i class="fas fa-sticky-note mr-1"></i>${doc.note}</p>` : ''}
+                                </div>
+                                <button class="text-gray-400 hover:text-blue-600 transition">
+                                    <i class="fas fa-external-link-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                        ${trainingButtons}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function filterDocuments() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            const categoryFilter = document.getElementById('category-filter').value;
+            const typeFilter = document.getElementById('type-filter').value;
+            const dateFrom = document.getElementById('date-from').value;
+            const dateTo = document.getElementById('date-to').value;
+            
+            const filtered = documents.filter(doc => {
+                const matchesSearch = doc.name.toLowerCase().includes(searchTerm) || 
+                                     getDisplayName(doc.name).toLowerCase().includes(searchTerm);
+                const matchesCategory = categoryFilter === 'all' || doc.category === categoryFilter;
+                const matchesType = typeFilter === 'all' || doc.type === typeFilter;
+                
+                // Date filtering
+                let matchesDate = true;
+                const docDate = extractDate(doc.name);
+                if (docDate) {
+                    if (dateFrom && docDate < dateFrom) matchesDate = false;
+                    if (dateTo && docDate > dateTo) matchesDate = false;
+                } else if (dateFrom || dateTo) {
+                    // If document has no date but date filter is applied
+                    matchesDate = false;
+                }
+                
+                return matchesSearch && matchesCategory && matchesType && matchesDate;
+            });
+            
+            renderDocuments(filtered);
+        }
+
+        function openViewer(filename, type) {
+            const modal = document.getElementById('viewer-modal');
+            const title = document.getElementById('viewer-title');
+            const typeBadge = document.getElementById('viewer-type');
+            const pdfViewer = document.getElementById('pdf-viewer');
+            const wordNotice = document.getElementById('word-notice');
+            const driveNotice = document.getElementById('drive-notice');
+            const videoNotice = document.getElementById('video-notice');
+            const downloadBtn = document.getElementById('download-btn');
+            const wordDownloadBtn = document.getElementById('word-download-btn');
+            const driveOpenBtn = document.getElementById('drive-open-btn');
+            const videoOpenBtn = document.getElementById('video-open-btn');
+            
+            // Find document
+            const doc = documents.find(d => d.name === filename);
+            const driveUrl = doc && doc.driveUrl ? doc.driveUrl : null;
+            
+            title.textContent = getDisplayName(filename);
+            
+            // Hide all viewers first
+            pdfViewer.classList.add('hidden');
+            wordNotice.classList.add('hidden');
+            driveNotice.classList.add('hidden');
+            videoNotice.classList.add('hidden');
+            
+            if (driveUrl) {
+                // Google Drive file
+                if (type === 'video') {
+                    typeBadge.textContent = 'VIDEO';
+                    typeBadge.className = 'px-3 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-700';
+                    videoNotice.classList.remove('hidden');
+                    videoOpenBtn.href = driveUrl;
+                    downloadBtn.href = driveUrl;
+                } else if (type === 'pdf') {
+                    typeBadge.textContent = 'PDF (Drive)';
+                    typeBadge.className = 'px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-700';
+                    // Try to embed Drive preview
+                    const embedUrl = convertDriveLinkToEmbed(driveUrl);
+                    if (embedUrl !== driveUrl) {
+                        pdfViewer.classList.remove('hidden');
+                        pdfViewer.src = embedUrl;
+                    } else {
+                        driveNotice.classList.remove('hidden');
+                        driveOpenBtn.href = driveUrl;
+                    }
+                    downloadBtn.href = driveUrl;
+                } else {
+                    typeBadge.textContent = 'WORD (Drive)';
+                    typeBadge.className = 'px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-700';
+                    driveNotice.classList.remove('hidden');
+                    driveOpenBtn.href = driveUrl;
+                    downloadBtn.href = driveUrl;
+                }
+            } else {
+                // Local file
+                const filePath = `../${filename}`;
+                
+                if (type === 'pdf') {
+                    typeBadge.textContent = 'PDF';
+                    typeBadge.className = 'px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-700';
+                    pdfViewer.classList.remove('hidden');
+                    pdfViewer.src = filePath;
+                    downloadBtn.href = filePath;
+                } else {
+                    typeBadge.textContent = 'WORD';
+                    typeBadge.className = 'px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-700';
+                    wordNotice.classList.remove('hidden');
+                    wordDownloadBtn.href = filePath;
+                    downloadBtn.href = filePath;
+                }
+            }
+            
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeViewer() {
+            const modal = document.getElementById('viewer-modal');
+            const pdfViewer = document.getElementById('pdf-viewer');
+            
+            modal.classList.remove('active');
+            pdfViewer.src = '';
+            document.body.style.overflow = '';
+        }
+
+        // Event listeners
+        document.getElementById('search-input').addEventListener('input', filterDocuments);
+        document.getElementById('category-filter').addEventListener('change', filterDocuments);
+        document.getElementById('type-filter').addEventListener('change', filterDocuments);
+        document.getElementById('date-from').addEventListener('change', filterDocuments);
+        document.getElementById('date-to').addEventListener('change', filterDocuments);
+        
+        // Check for saved session and show appropriate view
+        function checkAuth() {
+            const isLoggedIn = localStorage.getItem('kst_admin_logged_in') === 'true';
+            const loginGate = document.getElementById('login-gate');
+            const mainContent = document.getElementById('main-content');
+            
+            if (isLoggedIn) {
+                loginGate.style.display = 'none';
+                mainContent.classList.remove('hidden');
+                isAdminLoggedIn = true;
+                updateAdminUI();
+            } else {
+                loginGate.style.display = 'flex';
+                mainContent.classList.add('hidden');
+            }
+        }
+
+        // Handle login from gate
+        function handleGateLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('gate-username').value;
+            const password = document.getElementById('gate-password').value;
+            
+            if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+                localStorage.setItem('kst_admin_logged_in', 'true');
+                document.getElementById('gate-login-error').classList.add('hidden');
+                checkAuth();
+                // Clear inputs
+                document.getElementById('gate-username').value = '';
+                document.getElementById('gate-password').value = '';
+            } else {
+                document.getElementById('gate-login-error').classList.remove('hidden');
+                // Shake animation
+                const form = e.target;
+                form.classList.add('animate-bounce');
+                setTimeout(() => form.classList.remove('animate-bounce'), 500);
+            }
+        }
+
+        // Full logout - return to login gate
+        function fullLogout() {
+            localStorage.removeItem('kst_admin_logged_in');
+            isAdminLoggedIn = false;
+            checkAuth();
+        }
+
+        // Check auth on page load
+        checkAuth();
+        
+        // Load saved documents
+        loadDocuments();
+
+        // Close modal on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeViewer();
+                closeDateListModal();
+                closeUploadModal();
+                closeTrainingModal();
+                closeScanModal();
+                closeDriveModal();
+            }
+        });
+        
+        // Close upload modal on click outside
+        document.getElementById('upload-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'upload-modal') closeUploadModal();
+        });
+        
+        // Close drive modal on click outside
+        document.getElementById('drive-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'drive-modal') closeDriveModal();
+        });
+        
+        // Close training modal on click outside
+        document.getElementById('training-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'training-modal') closeTrainingModal();
+        });
+        
+        // Close scan modal on click outside
+        document.getElementById('scan-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'scan-modal') closeScanModal();
+        });
+
+        // Close modal on click outside
+        document.getElementById('viewer-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'viewer-modal') closeViewer();
+        });
+        
+        document.getElementById('date-list-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'date-list-modal') closeDateListModal();
+        });
+
+        // Initialize
+        updateStats();
+        updateTrainingProgress();
+        renderDocuments(documents);
+        
+        // Auto-check for new files if admin
+        setTimeout(() => {
+            if (isAdminLoggedIn) {
+                checkForNewFiles();
+            }
+        }, 2000);
+    </script>
+</body>
+</html>
