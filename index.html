@@ -291,11 +291,23 @@
                     </span>
                 </div>
                 <div class="flex gap-3 flex-wrap">
-                    <button onclick="openUserModal()" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition text-sm font-medium">
+                    <button onclick="openUserManageModal()" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition text-sm font-medium">
                         <i class="fas fa-users mr-1"></i> Quản lý User
                     </button>
                     <button onclick="openManageModal()" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition text-sm font-medium">
                         <i class="fas fa-list mr-1"></i> Quản lý tài liệu
+                    </button>
+                    <button onclick="openDriveModal()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition text-sm font-medium">
+                        <i class="fab fa-google-drive mr-1"></i> Thêm từ Drive
+                    </button>
+                    <button onclick="scanForNewDocuments()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition text-sm">
+                        <i class="fas fa-sync-alt mr-1"></i> Quét thư mục
+                    </button>
+                    <button onclick="openUploadModal()" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition text-sm font-medium">
+                        <i class="fas fa-cloud-upload-alt mr-1"></i> Upload Local
+                    </button>
+                    <button onclick="exportDocumentList()" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition text-sm">
+                        <i class="fas fa-file-export mr-1"></i> Xuất danh sách
                     </button>
                     <button onclick="showAllDates()" class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg transition text-sm">
                         <i class="fas fa-calendar-alt mr-1"></i> Xem ngày áp dụng
@@ -404,80 +416,125 @@
 
         <!-- Empty State -->
         <div id="empty-state" class="hidden glass-card p-12 text-center">
-            <i class="fas fa-folder-open text-6xl text-gray-400 mb-4"></i>
+            <i class="fab fa-google-drive text-6xl text-blue-400 mb-4"></i>
             <h3 class="text-xl font-semibold text-gray-600 mb-2">Chưa có tài liệu nào</h3>
-            <p class="text-gray-500 mb-6">Admin cần thêm tài liệu trực tiếp vào code</p>
+            <p class="text-gray-500 mb-6">Admin cần thêm tài liệu từ Google Drive để bắt đầu</p>
             <div id="admin-empty-actions" class="space-y-3">
+                <button onclick="openDriveModal()" class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition font-medium">
+                    <i class="fab fa-google-drive mr-2"></i>Thêm tài liệu từ Drive
+                </button>
                 <div class="text-sm text-gray-400">
-                    <p><i class="fas fa-info-circle mr-1"></i>Admin: Thêm tài liệu vào mảng documents trong code</p>
+                    <p><i class="fas fa-info-circle mr-1"></i>Upload file lên Drive → Copy link → Thêm vào hệ thống</p>
                 </div>
             </div>
         </div>
     </div>
 
     
-    <!-- User Management Modal (Admin only) -->
-    <div id="user-modal" class="login-modal">
-        <div class="glass-card p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-hidden flex flex-col">
+    <!-- Google Drive Add Modal (Admin only) -->
+    <div id="drive-modal" class="login-modal">
+        <div class="glass-card p-6 max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-xl font-bold text-gray-800 flex items-center gap-2">
-                    <i class="fas fa-users text-purple-600 text-2xl"></i>
-                    Quản lý User
+                    <i class="fab fa-google-drive text-blue-600 text-2xl"></i>
+                    Thêm tài liệu từ Google Drive
                 </h3>
-                <button onclick="closeUserModal()" class="text-gray-500 hover:text-gray-700">
+                <button onclick="closeDriveModal()" class="text-gray-500 hover:text-gray-700">
                     <i class="fas fa-times text-xl"></i>
                 </button>
             </div>
             
-            <div class="mb-4 flex gap-3">
-                <button onclick="showCreateUserForm()" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition text-sm">
-                    <i class="fas fa-user-plus mr-1"></i> Tạo User mới
-                </button>
-                <div class="ml-auto text-sm text-gray-500 flex items-center">
-                    <i class="fas fa-info-circle mr-1"></i>
-                    Tổng: <span id="user-total" class="font-bold ml-1">0</span> users
+            <form id="drive-form" onsubmit="handleDriveAdd(event)">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Tên tài liệu <span class="text-red-500">*</span></label>
+                    <input type="text" id="drive-name" required
+                           class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none"
+                           placeholder="VD: Chính sách bán hàng Q1/2026">
                 </div>
-            </div>
-            
-            <!-- Create User Form -->
-            <div id="create-user-form" class="hidden mb-4 p-4 bg-gray-50 rounded-lg">
-                <h4 class="font-semibold mb-3">Tạo User mới</h4>
-                <div class="grid grid-cols-2 gap-3">
-                    <input type="text" id="new-username" placeholder="Username" 
-                           class="px-3 py-2 border rounded-lg focus:outline-none focus:border-purple-500">
-                    <input type="password" id="new-password" placeholder="Password" 
-                           class="px-3 py-2 border rounded-lg focus:outline-none focus:border-purple-500">
-                    <select id="new-role" class="px-3 py-2 border rounded-lg focus:outline-none focus:border-purple-500">
-                        <option value="user">User</option>
-                        <option value="admin">Admin</option>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Danh mục <span class="text-red-500">*</span></label>
+                    <select id="drive-category" required
+                            class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none">
+                        <option value="">-- Chọn danh mục --</option>
+                        <option value="chinh-sach">Chính sách</option>
+                        <option value="bang-gia">Bảng giá</option>
+                        <option value="quy-dinh">Quy định</option>
+                        <option value="tai-lieu">Tài liệu đào tạo</option>
+                        <option value="video">Video</option>
+                        <option value="linh-hoat">Linh hoạt</option>
                     </select>
-                    <div class="flex gap-2">
-                        <button onclick="createUser()" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition text-sm">
-                            Tạo
-                        </button>
-                        <button onclick="hideCreateUserForm()" class="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-700 rounded-lg transition text-sm">
-                            Hủy
-                        </button>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Loại file <span class="text-red-500">*</span></label>
+                    <div class="flex gap-4">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="drive-type" value="pdf" checked class="text-blue-600">
+                            <span class="flex items-center gap-1"><i class="fas fa-file-pdf text-red-500"></i> PDF</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="drive-type" value="word" class="text-blue-600">
+                            <span class="flex items-center gap-1"><i class="fas fa-file-word text-blue-500"></i> Word</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="drive-type" value="video" class="text-blue-600">
+                            <span class="flex items-center gap-1"><i class="fas fa-video text-purple-500"></i> Video</span>
+                        </label>
                     </div>
                 </div>
-            </div>
-            
-            <div class="overflow-y-auto flex-1 border rounded-lg">
-                <table class="w-full">
-                    <thead class="bg-gray-50 sticky top-0">
-                        <tr class="text-left text-xs font-medium text-gray-500 uppercase">
-                            <th class="px-4 py-3">Username</th>
-                            <th class="px-4 py-3">Role</th>
-                            <th class="px-4 py-3">Ngày tạo</th>
-                            <th class="px-4 py-3">Trạng thái</th>
-                            <th class="px-4 py-3 text-center">Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody id="user-list" class="divide-y divide-gray-200">
-                        <!-- Users will be listed here -->
-                    </tbody>
-                </table>
-            </div>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Link Google Drive <span class="text-red-500">*</span></label>
+                    <input type="url" id="drive-url" required
+                           class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none"
+                           placeholder="https://drive.google.com/file/d/.../view">
+                    <p class="text-xs text-gray-500 mt-1">
+                        <i class="fas fa-info-circle mr-1"></i> 
+                        <strong>Hướng dẫn:</strong> Mở file trên Drive → Click "Share" → "Copy link" → Paste vào đây
+                    </p>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Ngày áp dụng</label>
+                        <input type="date" id="drive-start-date"
+                               class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Ngày kết thúc</label>
+                        <input type="date" id="drive-end-date"
+                               class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none">
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Kích thước (tùy chọn)</label>
+                    <input type="text" id="drive-size"
+                           class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none"
+                           placeholder="VD: 2.5 MB, 150 MB...">
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Ghi chú</label>
+                    <textarea id="drive-note" rows="2"
+                              class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none resize-none"
+                              placeholder="Ghi chú thêm về tài liệu (tùy chọn)"></textarea>
+                </div>
+                
+                <div id="drive-error" class="hidden mb-4 p-3 bg-red-100 text-red-700 rounded-lg text-sm"></div>
+                
+                <div class="flex gap-3">
+                    <button type="button" onclick="closeDriveModal()" 
+                            class="flex-1 px-4 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-xl transition font-medium">
+                        Hủy
+                    </button>
+                    <button type="submit" 
+                            class="flex-1 px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white rounded-xl transition font-medium shadow-lg">
+                        <i class="fas fa-plus mr-1"></i> Thêm vào hệ thống
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -495,6 +552,12 @@
             </div>
             
             <div class="mb-4 flex gap-3">
+                <button onclick="openDriveModal()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition text-sm">
+                    <i class="fab fa-google-drive mr-1"></i> Thêm tài liệu mới
+                </button>
+                <button onclick="exportDocumentList()" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition text-sm">
+                    <i class="fas fa-download mr-1"></i> Xuất danh sách
+                </button>
                 <div class="ml-auto text-sm text-gray-500 flex items-center">
                     <i class="fas fa-info-circle mr-1"></i>
                     Tổng: <span id="manage-total" class="font-bold ml-1">0</span> tài liệu
@@ -520,13 +583,237 @@
                 <div id="manage-empty" class="hidden p-8 text-center text-gray-500">
                     <i class="fas fa-folder-open text-4xl mb-3"></i>
                     <p>Chưa có tài liệu nào</p>
-                    <p class="text-sm mt-2">Admin cần thêm tài liệu trực tiếp vào code</p>
+                    <button onclick="openDriveModal()" class="mt-3 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition text-sm">
+                        <i class="fab fa-google-drive mr-1"></i> Thêm tài liệu đầu tiên
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
-    
+    <!-- User Management Modal (Admin only) -->
+    <div id="user-manage-modal" class="login-modal">
+        <div class="glass-card p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-hidden flex flex-col">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+                    <i class="fas fa-users text-purple-600 text-2xl"></i>
+                    Quản lý User
+                </h3>
+                <button onclick="closeUserManageModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="mb-4 flex gap-3">
+                <button onclick="openCreateUserModal()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition text-sm">
+                    <i class="fas fa-user-plus mr-1"></i> Tạo User mới
+                </button>
+                <div class="ml-auto text-sm text-gray-500 flex items-center">
+                    <i class="fas fa-info-circle mr-1"></i>
+                    Tổng: <span id="user-total" class="font-bold ml-1">0</span> users
+                </div>
+            </div>
+            
+            <div class="overflow-y-auto flex-1 border rounded-lg">
+                <table class="w-full">
+                    <thead class="bg-gray-50 sticky top-0">
+                        <tr class="text-left text-xs font-medium text-gray-500 uppercase">
+                            <th class="px-4 py-3">Username</th>
+                            <th class="px-4 py-3">Họ tên</th>
+                            <th class="px-4 py-3">Vai trò</th>
+                            <th class="px-4 py-3">Trạng thái</th>
+                            <th class="px-4 py-3">Ngày tạo</th>
+                            <th class="px-4 py-3">Đăng nhập cuối</th>
+                            <th class="px-4 py-3 text-center">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="user-list" class="divide-y divide-gray-200">
+                        <!-- Users will be listed here -->
+                    </tbody>
+                </table>
+                <div id="user-empty" class="hidden p-8 text-center text-gray-500">
+                    <i class="fas fa-users text-4xl mb-3"></i>
+                    <p>Chưa có user nào</p>
+                    <button onclick="openCreateUserModal()" class="mt-3 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition text-sm">
+                        <i class="fas fa-user-plus mr-1"></i> Tạo user đầu tiên
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create User Modal (Admin only) -->
+    <div id="create-user-modal" class="login-modal">
+        <div class="glass-card p-6 max-w-md w-full mx-4">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+                    <i class="fas fa-user-plus text-blue-600"></i>
+                    Tạo User mới
+                </h3>
+                <button onclick="closeCreateUserModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <form id="create-user-form" onsubmit="handleCreateUser(event)">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Username <span class="text-red-500">*</span></label>
+                    <input type="text" id="new-username" required
+                           class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none"
+                           placeholder="VD: nhanvien01">
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Password <span class="text-red-500">*</span></label>
+                    <input type="password" id="new-password" required
+                           class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none"
+                           placeholder="Nhập password">
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Họ tên <span class="text-red-500">*</span></label>
+                    <input type="text" id="new-fullname" required
+                           class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none"
+                           placeholder="VD: Nguyễn Văn A">
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Vai trò <span class="text-red-500">*</span></label>
+                    <select id="new-role" required
+                            class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none">
+                        <option value="user">User</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Email (tùy chọn)</label>
+                    <input type="email" id="new-email"
+                           class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none"
+                           placeholder="VD: nhanvien@hoasenhome.com">
+                </div>
+                
+                <div id="create-user-error" class="hidden mb-4 p-3 bg-red-100 text-red-700 rounded-lg text-sm"></div>
+                
+                <div class="flex gap-3">
+                    <button type="button" onclick="closeCreateUserModal()" 
+                            class="flex-1 px-4 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-xl transition font-medium">
+                        Hủy
+                    </button>
+                    <button type="submit" 
+                            class="flex-1 px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white rounded-xl transition font-medium shadow-lg">
+                        <i class="fas fa-user-plus mr-1"></i> Tạo User
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Upload Modal (Admin only) -->
+    <div id="upload-modal" class="login-modal">
+        <div class="glass-card p-6 max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+                    <i class="fas fa-cloud-upload-alt text-red-600"></i>
+                    Upload tài liệu Local
+                </h3>
+                <button onclick="closeUploadModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <form id="upload-form" onsubmit="handleUpload(event)">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Tên tài liệu <span class="text-red-500">*</span></label>
+                    <input type="text" id="upload-name" required
+                           class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-red-500 focus:outline-none"
+                           placeholder="VD: Chính sách bán hàng Q1/2026">
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Danh mục <span class="text-red-500">*</span></label>
+                    <select id="upload-category" required
+                            class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-red-500 focus:outline-none">
+                        <option value="">-- Chọn danh mục --</option>
+                        <option value="chinh-sach">Chính sách</option>
+                        <option value="bang-gia">Bảng giá</option>
+                        <option value="quy-dinh">Quy định</option>
+                        <option value="tai-lieu">Tài liệu đào tạo</option>
+                        <option value="linh-hoat">Linh hoạt</option>
+                    </select>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Ngày áp dụng <span class="text-red-500">*</span></label>
+                        <input type="date" id="upload-start-date" required
+                               class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-red-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Ngày kết thúc</label>
+                        <input type="date" id="upload-end-date"
+                               class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-red-500 focus:outline-none">
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">File tài liệu <span class="text-red-500">*</span></label>
+                    <div class="relative">
+                        <input type="file" id="upload-file" required accept=".pdf,.doc,.docx"
+                               class="w-full px-4 py-3 rounded-xl border-2 border-dashed border-gray-300 hover:border-red-400 focus:border-red-500 focus:outline-none cursor-pointer bg-gray-50"
+                               onchange="updateFileInfo()">
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">
+                        <i class="fas fa-info-circle mr-1"></i> Chấp nhận file PDF, DOC, DOCX (tối đa 50MB)
+                    </p>
+                    <div id="file-info" class="hidden mt-2 p-2 bg-yellow-50 rounded-lg text-sm">
+                        <i class="fas fa-file text-yellow-600 mr-1"></i>
+                        <span id="file-name" class="font-medium"></span>
+                        <span id="file-size" class="text-gray-500 ml-1"></span>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Ghi chú</label>
+                    <textarea id="upload-note" rows="2"
+                              class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-red-500 focus:outline-none resize-none"
+                              placeholder="Ghi chú thêm về tài liệu (tùy chọn)"></textarea>
+                </div>
+                
+                <div id="upload-error" class="hidden mb-4 p-3 bg-red-100 text-red-700 rounded-lg text-sm"></div>
+                
+                <div class="flex gap-3">
+                    <button type="button" onclick="closeUploadModal()" 
+                            class="flex-1 px-4 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-xl transition font-medium">
+                        Hủy
+                    </button>
+                    <button type="submit" 
+                            class="flex-1 px-4 py-3 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white rounded-xl transition font-medium shadow-lg">
+                        <i class="fas fa-upload mr-1"></i> Upload Local
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Date List Modal (Admin only) -->
+    <div id="date-list-modal" class="login-modal">
+        <div class="glass-card p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-hidden flex flex-col">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-gray-800">
+                    <i class="fas fa-calendar-alt mr-2 text-red-500"></i>
+                    Danh sách ngày áp dụng chính sách
+                </h3>
+                <button onclick="closeDateListModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div id="date-list-content" class="overflow-y-auto flex-1">
+                <!-- Date list will be populated here -->
+            </div>
+        </div>
+    </div>
+
     <!-- PDF Viewer Modal -->
     <div id="viewer-modal" class="viewer-modal">
         <div class="flex flex-col w-full h-full">
@@ -578,6 +865,23 @@
     </div>
 
     <script>
+        // User management data
+        let users = [
+            {
+                username: 'admin',
+                password: 'admin123',
+                fullname: 'Administrator',
+                role: 'admin',
+                email: 'admin@hoasenhome.com',
+                createdDate: '2026-01-01',
+                lastLogin: null,
+                status: 'active'
+            }
+        ];
+
+        let currentUser = null;
+        let isAdminLoggedIn = false;
+
         // Document data - Google Drive links
         let documents = [
             // PASTE LINK DRIVE TẠI ĐÂY
@@ -609,11 +913,6 @@
                 isNew: false 
             }
             */
-        ];
-
-        // User management system
-        let users = [
-            { username: 'admin', password: 'admin123', role: 'admin', createdDate: '2026-01-01', status: 'active' }
         ];
 
         const categoryLabels = {
@@ -675,13 +974,11 @@
         // Admin credentials (in production, this should be server-side)
         const ADMIN_USERNAME = 'admin';
         const ADMIN_PASSWORD = 'admin123';
-        let isAdminLoggedIn = false;
-        let currentUser = '';
         let currentTab = 'all';
-        let workspacePath = '';
-        let workspaceFiles = [];
-        let newDocuments = [];
-        let trainingProgress = {};     // Training configuration - which categories are required for training
+        let currentTrainingDoc = null;
+        let scannedNewDocs = [];
+        
+        // Training configuration - which categories are required for training
         const trainingCategories = ['chinh-sach', 'quy-dinh', 'tai-lieu'];
         
         // Marked documents storage
@@ -980,16 +1277,29 @@
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             
-            if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
-                isAdminLoggedIn = true;
+            const user = users.find(u => u.username === username && u.password === password && u.status === 'active');
+            
+            if (user) {
+                currentUser = user;
+                isAdminLoggedIn = user.role === 'admin';
+                
+                // Update last login
+                user.lastLogin = new Date().toISOString();
+                saveUsers();
+                
                 closeLoginModal();
                 updateAdminUI();
+                showNotification(`Chào mừng ${user.fullname}!`, 'success');
             } else {
                 document.getElementById('login-error').classList.remove('hidden');
             }
         }
 
         function logout() {
+            if (currentUser) {
+                showNotification(`Tạm biệt ${currentUser.fullname}!`, 'info');
+            }
+            currentUser = null;
             isAdminLoggedIn = false;
             updateAdminUI();
         }
@@ -998,11 +1308,34 @@
             const adminBadge = document.getElementById('admin-badge');
             const logoutBtn = document.getElementById('logout-btn');
             const adminPanel = document.getElementById('admin-panel');
+            const loginBtn = document.getElementById('login-btn');
             
-            // Always show admin features since we're already logged in
-            adminBadge.classList.remove('hidden');
-            logoutBtn.classList.remove('hidden');
-            adminPanel.classList.add('active');
+            if (currentUser) {
+                // User is logged in
+                adminBadge.classList.remove('hidden');
+                logoutBtn.classList.remove('hidden');
+                loginBtn.classList.add('hidden');
+                
+                // Show admin panel only for admin users
+                if (isAdminLoggedIn) {
+                    adminPanel.classList.remove('hidden');
+                } else {
+                    adminPanel.classList.add('hidden');
+                }
+                
+                // Update admin badge text
+                adminBadge.innerHTML = `
+                    <i class="fas fa-user-circle mr-1"></i>
+                    ${currentUser.fullname} 
+                    ${isAdminLoggedIn ? '<span class="ml-2 px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">Admin</span>' : ''}
+                `;
+            } else {
+                // User is not logged in
+                adminBadge.classList.add('hidden');
+                logoutBtn.classList.add('hidden');
+                loginBtn.classList.remove('hidden');
+                adminPanel.classList.add('hidden');
+            }
         }
 
         function applyDateFilter() {
@@ -1125,119 +1458,140 @@
         }
 
         // User Management functions
-        function openUserModal() {
+        function openUserManageModal() {
             if (!isAdminLoggedIn) return;
-            document.getElementById('user-modal').classList.add('active');
+            document.getElementById('user-manage-modal').classList.add('active');
             renderUserList();
         }
 
-        function closeUserModal() {
-            document.getElementById('user-modal').classList.remove('active');
-            hideCreateUserForm();
+        function closeUserManageModal() {
+            document.getElementById('user-manage-modal').classList.remove('active');
         }
 
-        function showCreateUserForm() {
-            document.getElementById('create-user-form').classList.remove('hidden');
-            document.getElementById('new-username').value = '';
-            document.getElementById('new-password').value = '';
-            document.getElementById('new-role').value = 'user';
+        function openCreateUserModal() {
+            document.getElementById('create-user-modal').classList.add('active');
+            document.getElementById('create-user-form').reset();
+            document.getElementById('create-user-error').classList.add('hidden');
         }
 
-        function hideCreateUserForm() {
-            document.getElementById('create-user-form').classList.add('hidden');
+        function closeCreateUserModal() {
+            document.getElementById('create-user-modal').classList.remove('active');
         }
 
         function renderUserList() {
             const tbody = document.getElementById('user-list');
+            const empty = document.getElementById('user-empty');
             const total = document.getElementById('user-total');
             
             total.textContent = users.length;
             
+            if (users.length === 0) {
+                tbody.classList.add('hidden');
+                empty.classList.remove('hidden');
+                return;
+            }
+            
+            tbody.classList.remove('hidden');
+            empty.classList.add('hidden');
+            
             tbody.innerHTML = users.map((user, index) => {
-                const isCurrentUser = user.username === currentUser;
+                const roleBadge = user.role === 'admin' ? 
+                    '<span class="px-2 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-700">Admin</span>' :
+                    '<span class="px-2 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-700">User</span>';
+                
+                const statusBadge = user.status === 'active' ?
+                    '<span class="px-2 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700">Hoạt động</span>' :
+                    '<span class="px-2 py-1 rounded-full text-xs font-bold bg-red-100 text-red-700">Khóa</span>';
+                
+                const lastLogin = user.lastLogin ? 
+                    new Date(user.lastLogin).toLocaleString('vi-VN') : 'Chưa đăng nhập';
+                
+                const canDelete = user.username !== 'admin';
+                
                 return `
                     <tr class="hover:bg-gray-50">
-                        <td class="px-4 py-3">
-                            <div class="flex items-center gap-2">
-                                <i class="fas fa-user-circle text-gray-400"></i>
-                                <span class="font-medium">${user.username}</span>
-                                ${isCurrentUser ? '<span class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">Bạn</span>' : ''}
-                            </div>
-                        </td>
-                        <td class="px-4 py-3">
-                            <span class="px-2 py-1 text-xs rounded-full ${user.role === 'admin' ? 'bg-purple-100 text-purple-700' : 'bg-gray-100 text-gray-700'}">
-                                ${user.role === 'admin' ? 'Admin' : 'User'}
-                            </span>
-                        </td>
-                        <td class="px-4 py-3 text-sm text-gray-600">
-                            ${user.createdDate}
-                        </td>
-                        <td class="px-4 py-3">
-                            <span class="px-2 py-1 text-xs rounded-full ${user.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">
-                                ${user.status === 'active' ? 'Hoạt động' : 'Khoá'}
-                            </span>
-                        </td>
+                        <td class="px-4 py-3 font-medium">${user.username}</td>
+                        <td class="px-4 py-3">${user.fullname}</td>
+                        <td class="px-4 py-3">${roleBadge}</td>
+                        <td class="px-4 py-3">${statusBadge}</td>
+                        <td class="px-4 py-3 text-sm text-gray-600">${user.createdDate}</td>
+                        <td class="px-4 py-3 text-sm text-gray-600">${lastLogin}</td>
                         <td class="px-4 py-3 text-center">
-                            ${!isCurrentUser ? `
-                                <button onclick="deleteUser(${index})" class="text-red-600 hover:text-red-800 text-sm">
+                            ${canDelete ? 
+                                `<button onclick="deleteUser(${index})" class="text-red-600 hover:text-red-800 text-sm" title="Xóa user">
                                     <i class="fas fa-trash"></i>
-                                </button>
-                            ` : '<span class="text-gray-400 text-sm">-</span>'}
+                                </button>` :
+                                '<span class="text-gray-300 text-sm" title="Không thể xóa admin"><i class="fas fa-shield-alt"></i></span>'
+                            }
                         </td>
                     </tr>
                 `;
             }).join('');
         }
 
-        function createUser() {
+        function handleCreateUser(e) {
+            e.preventDefault();
+            const errorDiv = document.getElementById('create-user-error');
+            
             const username = document.getElementById('new-username').value.trim();
-            const password = document.getElementById('new-password').value.trim();
+            const password = document.getElementById('new-password').value;
+            const fullname = document.getElementById('new-fullname').value.trim();
             const role = document.getElementById('new-role').value;
+            const email = document.getElementById('new-email').value.trim();
             
-            if (!username || !password) {
-                alert('Vui lòng nhập đầy đủ username và password');
-                return;
-            }
-            
-            // Check if user already exists
+            // Validation
             if (users.find(u => u.username === username)) {
-                alert('Username đã tồn tại');
+                errorDiv.textContent = 'Username đã tồn tại!';
+                errorDiv.classList.remove('hidden');
                 return;
             }
             
+            if (password.length < 6) {
+                errorDiv.textContent = 'Password phải có ít nhất 6 ký tự!';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+            
+            // Create new user
             const newUser = {
                 username: username,
                 password: password,
+                fullname: fullname,
                 role: role,
+                email: email,
                 createdDate: new Date().toISOString().split('T')[0],
+                lastLogin: null,
                 status: 'active'
             };
             
             users.push(newUser);
             saveUsers();
+            
+            errorDiv.classList.add('hidden');
+            closeCreateUserModal();
             renderUserList();
-            hideCreateUserForm();
-            showNotification('Đã tạo user mới: ' + username, 'success');
+            
+            showNotification(`Đã tạo user "${username}" thành công!`, 'success');
         }
 
         function deleteUser(index) {
             const user = users[index];
-            if (confirm(`Bạn có chắc muốn xóa user "${user.username}"?`)) {
+            if (confirm(`Bạn có chắc muốn xóa user "${user.fullname}" (${user.username})?`)) {
                 users.splice(index, 1);
                 saveUsers();
                 renderUserList();
-                showNotification('Đã xóa user: ' + user.username, 'success');
+                showNotification('Đã xóa user', 'success');
             }
         }
 
         function saveUsers() {
-            localStorage.setItem('users', JSON.stringify(users));
+            localStorage.setItem('kst_users', JSON.stringify(users));
         }
 
         function loadUsers() {
-            const savedUsers = localStorage.getItem('users');
-            if (savedUsers) {
-                users = JSON.parse(savedUsers);
+            const saved = localStorage.getItem('kst_users');
+            if (saved) {
+                users = JSON.parse(saved);
             }
         }
 
@@ -1750,17 +2104,14 @@
         
         // Check for saved session and show appropriate view
         function checkAuth() {
-            const savedLogin = localStorage.getItem('kst_admin_logged_in');
-            const savedUser = localStorage.getItem('currentUser');
-            const savedAdmin = localStorage.getItem('adminLoggedIn');
+            const isLoggedIn = localStorage.getItem('kst_admin_logged_in') === 'true';
             const loginGate = document.getElementById('login-gate');
             const mainContent = document.getElementById('main-content');
             
-            if (savedLogin === 'true' && savedUser) {
-                currentUser = savedUser;
-                isAdminLoggedIn = savedAdmin === 'true';
+            if (isLoggedIn) {
                 loginGate.style.display = 'none';
                 mainContent.classList.remove('hidden');
+                isAdminLoggedIn = true;
                 updateAdminUI();
             } else {
                 loginGate.style.display = 'flex';
@@ -1769,46 +2120,33 @@
         }
 
         // Handle login from gate
-        function login() {
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
+        function handleGateLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('gate-username').value;
+            const password = document.getElementById('gate-password').value;
             
-            const user = users.find(u => u.username === username && u.password === password && u.status === 'active');
-            
-            if (user) {
-                currentUser = username;
-                isAdminLoggedIn = user.role === 'admin';
-                localStorage.setItem('currentUser', username);
-                localStorage.setItem('adminLoggedIn', isAdminLoggedIn.toString());
-                
-                document.getElementById('login-section').classList.add('hidden');
-                document.getElementById('app-section').classList.remove('hidden');
-                
-                if (isAdminLoggedIn) {
-                    document.getElementById('admin-panel').classList.remove('hidden');
-                }
-                
-                updateStats();
-                renderDocuments(documents);
-                showAllDates();
-                showNotification('Đăng nhập thành công! Chào ' + username, 'success');
+            if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+                localStorage.setItem('kst_admin_logged_in', 'true');
+                document.getElementById('gate-login-error').classList.add('hidden');
+                checkAuth();
+                // Clear inputs
+                document.getElementById('gate-username').value = '';
+                document.getElementById('gate-password').value = '';
             } else {
-                showNotification('Sai tên đăng nhập hoặc mật khẩu!', 'error');
+                document.getElementById('gate-login-error').classList.remove('hidden');
+                // Shake animation
+                const form = e.target;
+                form.classList.add('animate-bounce');
+                setTimeout(() => form.classList.remove('animate-bounce'), 500);
             }
         }
 
         // Full logout - return to login gate
         function fullLogout() {
             localStorage.removeItem('kst_admin_logged_in');
-            localStorage.removeItem('currentUser');
-            localStorage.removeItem('adminLoggedIn');
             isAdminLoggedIn = false;
-            currentUser = '';
             checkAuth();
         }
-
-        // Load users on page load
-        loadUsers();
 
         // Check auth on page load
         checkAuth();
@@ -1826,6 +2164,8 @@
                 closeScanModal();
                 closeDriveModal();
                 closeManageModal();
+                closeUserManageModal();
+                closeCreateUserModal();
             }
         });
         
@@ -1844,9 +2184,14 @@
             if (e.target.id === 'manage-modal') closeManageModal();
         });
         
-        // Close user modal on click outside
-        document.getElementById('user-modal').addEventListener('click', (e) => {
-            if (e.target.id === 'user-modal') closeUserModal();
+        // Close user manage modal on click outside
+        document.getElementById('user-manage-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'user-manage-modal') closeUserManageModal();
+        });
+        
+        // Close create user modal on click outside
+        document.getElementById('create-user-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'create-user-modal') closeCreateUserModal();
         });
         
         // Close training modal on click outside
@@ -1885,6 +2230,7 @@
         }
 
         // Initialize
+        loadUsers();
         loadDocumentsFromJSON().then(() => {
             // Load any saved documents from localStorage (new additions)
             loadDocuments();
