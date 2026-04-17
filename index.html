@@ -578,402 +578,37 @@
     </div>
 
     <script>
-        // Document data - Local files
+        // Document data - Google Drive links
         let documents = [
-            // QUY ĐỊNH
+            // PASTE LINK DRIVE TẠI ĐÂY
+            // Ví dụ mẫu:
+            /*
             { 
-                name: "00. QUY DINH CHI HHMG.pdf", 
-                displayName: "Quy định chi HHMG",
-                category: "quy-dinh", 
-                type: "pdf", 
-                size: "1.2 MB",
-                startDate: "2025-01-01",
-                note: "Quy định chi hoa hồng management",
-                uploadDate: "2026-01-15",
-                isNew: false 
-            },
-            { 
-                name: "NỘI QUY LAO ĐỘNG_CTCP HSH 2026.pdf", 
-                displayName: "Nội quy lao động CTCP HSH 2026",
-                category: "quy-dinh", 
+                name: "Chính sách bán hàng Q1/2026.pdf", 
+                displayName: "Chính sách bán hàng Q1/2026",
+                category: "chinh-sach", 
                 type: "pdf", 
                 size: "2.5 MB",
                 startDate: "2026-01-01",
-                note: "Nội quy lao động năm 2026",
+                endDate: "",
+                note: "Chính sách mới cho Q1/2026",
+                driveUrl: "https://drive.google.com/file/d/ABC123/view",
                 uploadDate: "2026-01-15",
                 isNew: false 
             },
             { 
-                name: "2018-04-09- KIỂM KÊ TĂNG CƯỜNG HÀNG HÓA.pdf", 
-                displayName: "Kiểm kê tăng cường hàng hóa",
-                category: "quy-dinh", 
-                type: "pdf", 
-                size: "1.8 MB",
-                startDate: "2018-04-09",
-                note: "Quy định kiểm kê hàng hóa",
-                uploadDate: "2026-01-15",
-                isNew: false 
-            },
-            { 
-                name: "BM_01_ĐCCN_HSH.pdf", 
-                displayName: "Biểu mẫu ĐCCN HSH",
-                category: "quy-dinh", 
-                type: "pdf", 
-                size: "0.8 MB",
-                startDate: "2025-01-01",
-                note: "Biểu mẫu điều chỉnh công nợ",
-                uploadDate: "2026-01-15",
-                isNew: false 
-            },
-            { 
-                name: "01. QUY DINH HANG HOA GUI KHO CAC ĐVKD 16.01.2025 - Tr.khai.pdf", 
-                displayName: "Quy định hàng hóa gửi kho các ĐVKD",
-                category: "quy-dinh", 
-                type: "pdf", 
-                size: "1.5 MB",
-                startDate: "2025-01-16",
-                note: "Quy định gửi kho ĐVKD",
-                uploadDate: "2026-01-15",
-                isNew: false 
-            },
-
-            // BẢNG GIÁ
-            { 
-                name: "01. BANG GIA CONG BO TON CAN 01.12.2025 - tr.khai.pdf", 
-                displayName: "Bảng giá công bố tôn cản",
-                category: "bang-gia", 
-                type: "pdf", 
-                size: "2.1 MB",
-                startDate: "2025-12-01",
-                note: "Bảng giá tôn cản công bố",
-                uploadDate: "2026-01-15",
-                isNew: false 
-            },
-            { 
-                name: "01. BANG GIA GACH BONG GIO LUSTILE 01.12.2025 - Tr.Khai.pdf", 
-                displayName: "Bảng giá gạch bông gió LUSTILE",
-                category: "bang-gia", 
-                type: "pdf", 
-                size: "3.2 MB",
-                startDate: "2025-12-01",
-                note: "Bảng giá gạch bông gió",
-                uploadDate: "2026-01-15",
-                isNew: false 
-            },
-            { 
-                name: "01. BANG GIA NOI BO TON HOA SEN GOLD 01.12.2025 - Tr.khai.pdf", 
-                displayName: "Bảng giá nội bộ tôn Hoa Sen Gold",
-                category: "bang-gia", 
-                type: "pdf", 
-                size: "2.8 MB",
-                startDate: "2025-12-01",
-                note: "Bảng giá tôn Hoa Sen Gold nội bộ",
-                uploadDate: "2026-01-15",
-                isNew: false 
-            },
-            { 
-                name: "01. BANG GIA SON KIM LOAI LUSCOAT 01.12.2025 - Trkhai.pdf", 
-                displayName: "Bảng giá sơn kim loại LUSCOAT",
-                category: "bang-gia", 
-                type: "pdf", 
-                size: "1.9 MB",
-                startDate: "2025-12-01",
-                note: "Bảng giá sơn kim loại",
-                uploadDate: "2026-01-15",
-                isNew: false 
-            },
-            { 
-                name: "01. BG BAN BN INOX LUSWELL 01.12.2025 - Tr.Khai.pdf", 
-                displayName: "Bảng giá bán buôn inox LUSWELL",
-                category: "bang-gia", 
-                type: "pdf", 
-                size: "2.3 MB",
-                startDate: "2025-12-01",
-                note: "Bảng giá inox bán buôn",
-                uploadDate: "2026-01-15",
-                isNew: false 
-            },
-            { 
-                name: "01. BG CONG BO TON CACH NHIET 01.12.2025 - Tr.khai.pdf", 
-                displayName: "Bảng giá công bố tôn cách nhiệt",
-                category: "bang-gia", 
-                type: "pdf", 
-                size: "2.0 MB",
-                startDate: "2025-12-01",
-                note: "Bảng giá tôn cách nhiệt",
-                uploadDate: "2026-01-15",
-                isNew: false 
-            },
-            { 
-                name: "01. BG CONG BO TON HOA SEN GOLD - 01.12.2025 - Tr. khai.pdf", 
-                displayName: "Bảng giá công bố tôn Hoa Sen Gold",
-                category: "bang-gia", 
-                type: "pdf", 
-                size: "2.7 MB",
-                startDate: "2025-12-01",
-                note: "Bảng giá công bố tôn Hoa Sen Gold",
-                uploadDate: "2026-01-15",
-                isNew: false 
-            },
-            { 
-                name: "01. BG CONG BO TON HOA SEN GOLD - 01.12.2025 - tr.khai.pdf", 
-                displayName: "Bảng giá công bố tôn Hoa Sen Gold (bản 2)",
-                category: "bang-gia", 
-                type: "pdf", 
-                size: "2.7 MB",
-                startDate: "2025-12-01",
-                note: "Bảng giá công bố tôn Hoa Sen Gold bản 2",
-                uploadDate: "2026-01-15",
-                isNew: false 
-            },
-            { 
-                name: "03. BANG GIA OTMK LE 01.12.2025 - tr.khai.pdf", 
-                displayName: "Bảng giá ống thép mạ kẽm lẻ",
-                category: "bang-gia", 
-                type: "pdf", 
-                size: "1.7 MB",
-                startDate: "2025-12-01",
-                note: "Bảng giá ống thép mạ kẽm lẻ",
-                uploadDate: "2026-01-15",
-                isNew: false 
-            },
-
-            // CHÍNH SÁCH
-            { 
-                name: "00. CS LHKV BONG GIO LUSTILE 01.12.2025 - Tr.Khai.pdf", 
-                displayName: "Chính sách LHKV bông gió LUSTILE",
-                category: "chinh-sach", 
-                type: "pdf", 
-                size: "1.6 MB",
-                startDate: "2025-12-01",
-                note: "Chính sách lợi nhuận khoán bông gió",
-                uploadDate: "2026-01-15",
-                isNew: false 
-            },
-            { 
-                name: "01. CHI HOA HONG MOI GIOI SAN PHAM SAN XUAT 01.01.2025 - Trkhai.pdf", 
-                displayName: "Chiết khấu hoa hồng môi giới sản phẩm sản xuất",
-                category: "chinh-sach", 
-                type: "pdf", 
-                size: "1.4 MB",
-                startDate: "2025-01-01",
-                note: "Chiết khấu hoa hồng môi giới SX",
-                uploadDate: "2026-01-15",
-                isNew: false 
-            },
-            { 
-                name: "01. BAN MAU CHO SPTM 11.06.2025 _Tr.Khai.pdf", 
-                displayName: "Chính sách bán màu cho SPTM",
-                category: "chinh-sach", 
-                type: "pdf", 
-                size: "1.3 MB",
-                startDate: "2025-06-11",
-                note: "Chính sách bán màu sản phẩm thương mại",
-                uploadDate: "2026-01-15",
-                isNew: false 
-            },
-            { 
-                name: "01. CS DINH MUC TBNT & NB 01.12.2025 - Tr.Khai.pdf", 
-                displayName: "Chính sách định mức TBNT & NB",
-                category: "chinh-sach", 
-                type: "pdf", 
-                size: "1.8 MB",
-                startDate: "2025-12-01",
-                note: "Định mức trợ bản và trợ bảo hiểm",
-                uploadDate: "2026-01-15",
-                isNew: false 
-            },
-            { 
-                name: "01. CS KINH DOANH CHO SPTM 01.12.2025 - Tr.Khai.pdf", 
-                displayName: "Chính sách kinh doanh cho SPTM",
-                category: "chinh-sach", 
-                type: "pdf", 
-                size: "2.0 MB",
-                startDate: "2025-12-01",
-                note: "Chính sách kinh doanh sản phẩm thương mại",
-                uploadDate: "2026-01-15",
-                isNew: false 
-            },
-            { 
-                name: "01. CS ĐM CUỐI T11.2025 - 27.11.2025 - tr.khai.pdf", 
-                displayName: "Chính sách định mức cuối T11.2025",
-                category: "chinh-sach", 
-                type: "pdf", 
-                size: "1.5 MB",
-                startDate: "2025-11-27",
-                note: "Định mức cuối tháng 11/2025",
-                uploadDate: "2026-01-15",
-                isNew: false 
-            },
-            { 
-                name: "01. CS ĐM NGÀY 28.11.2025 - tr.khai.pdf", 
-                displayName: "Chính sách định mức ngày 28.11.2025",
-                category: "chinh-sach", 
-                type: "pdf", 
-                size: "1.4 MB",
-                startDate: "2025-11-28",
-                note: "Định mức ngày 28/11/2025",
-                uploadDate: "2026-01-15",
-                isNew: false 
-            },
-            { 
-                name: "01. CSKD HÀNG LOAI 2, A1-XKRL 01.12.2025 - Tr.khai NB.PDF", 
-                displayName: "Chính sách kinh doanh hàng loại 2, A1-XKRL (Nam Bộ)",
-                category: "chinh-sach", 
-                type: "pdf", 
-                size: "1.9 MB",
-                startDate: "2025-12-01",
-                note: "CSKD hàng loại 2 khu vực Nam Bộ",
-                uploadDate: "2026-01-15",
-                isNew: false 
-            },
-            { 
-                name: "01. CSKD HÀNG LOAI 2, A1-XKRL 01.12.2025 - Tr.khai NĐ.pdf", 
-                displayName: "Chính sách kinh doanh hàng loại 2, A1-XKRL (Bắc)",
-                category: "chinh-sach", 
-                type: "pdf", 
-                size: "1.9 MB",
-                startDate: "2025-12-01",
-                note: "CSKD hàng loại 2 khu vực Bắc",
-                uploadDate: "2026-01-15",
-                isNew: false 
-            },
-            { 
-                name: "1. CHI HOA HONG MOI GIOI SAN PHAM THUONG MAI 01.07.2025 - Tr.Khai.pdf", 
-                displayName: "Chiết khấu hoa hồng môi giới sản phẩm thương mại",
-                category: "chinh-sach", 
-                type: "pdf", 
-                size: "1.3 MB",
-                startDate: "2025-07-01",
-                note: "Chiết khấu hoa hồng môi giới TM",
-                uploadDate: "2026-01-15",
-                isNew: false 
-            },
-            { 
-                name: "02. CS ƯU DAI LUSWELL 01.12.2025_ Trkhai.pdf", 
-                displayName: "Chính sách ưu đãi LUSWELL",
-                category: "chinh-sach", 
-                type: "pdf", 
-                size: "1.2 MB",
-                startDate: "2025-12-01",
-                note: "Chính sách ưu đãi LUSWELL",
-                uploadDate: "2026-01-15",
-                isNew: false 
-            },
-            { 
-                name: "02. CSCK HO TRO CHO GACH NGOI _ 01.12.2025 - Tr.Khai.pdf", 
-                displayName: "Chính sách chiết khấu hỗ trợ gạch ngói",
-                category: "chinh-sach", 
-                type: "pdf", 
-                size: "1.4 MB",
-                startDate: "2025-12-01",
-                note: "Chiết khấu hỗ trợ gạch ngói",
-                uploadDate: "2026-01-15",
-                isNew: false 
-            },
-            { 
-                name: "05. CS DINH MUC HO TRO GACH LUSTRA 01.12.2025 - Tr.khai.pdf", 
-                displayName: "Chính sách định mức hỗ trợ gạch LUSTRA",
-                category: "chinh-sach", 
-                type: "pdf", 
-                size: "1.3 MB",
-                startDate: "2025-12-01",
-                note: "Định mức hỗ trợ gạch LUSTRA",
-                uploadDate: "2026-01-15",
-                isNew: false 
-            },
-            { 
-                name: "06. CK HT KHTT 28.11.2025 (SL 26-27.11)- tr.khai.pdf", 
-                displayName: "Chiết khấu hỗ trợ kinh doanh thép 28.11.2025",
-                category: "chinh-sach", 
-                type: "pdf", 
-                size: "1.1 MB",
-                startDate: "2025-11-28",
-                note: "CK hỗ trợ kinh doanh thép",
-                uploadDate: "2026-01-15",
-                isNew: false 
-            },
-
-            // LINH HOẠT
-            { 
-                name: "01. LH TON THEP CONG TRINH 01.12.2025 - Tr.khai.pdf", 
-                displayName: "Linh hoạt tôn thép công trình",
-                category: "linh-hoat", 
-                type: "pdf", 
-                size: "1.6 MB",
-                startDate: "2025-12-01",
-                note: "Chính sách linh hoạt tôn thép công trình",
-                uploadDate: "2026-01-15",
-                isNew: false 
-            },
-            { 
-                name: "02. LHKV OT 01.12.2025 - tr.khai.pdf", 
-                displayName: "Linh hoạt LHKV ống thép",
-                category: "linh-hoat", 
-                type: "pdf", 
-                size: "1.4 MB",
-                startDate: "2025-12-01",
-                note: "Linh hoạt lợi nhuận khoán ống thép",
-                uploadDate: "2026-01-15",
-                isNew: false 
-            },
-            { 
-                name: "02. LHKV TON MA, TDM 01.12.2025 - Tr.khai.pdf", 
-                displayName: "Linh hoạt LHKV tôn mạ, tôn đen mạ",
-                category: "linh-hoat", 
-                type: "pdf", 
-                size: "1.5 MB",
-                startDate: "2025-12-01",
-                note: "Linh hoạt LHKV tôn mạ, tôn đen mạ",
-                uploadDate: "2026-01-15",
-                isNew: false 
-            },
-            { 
-                name: "02. LHKV TON, TDM, OT NOI BO 01.12.2025 - Tr.khai.pdf", 
-                displayName: "Linh hoạt LHKV tôn, TDM, ống thép nội bộ",
-                category: "linh-hoat", 
-                type: "pdf", 
-                size: "1.7 MB",
-                startDate: "2025-12-01",
-                note: "Linh hoạt LHKV nội bộ",
-                uploadDate: "2026-01-15",
-                isNew: false 
-            },
-            { 
-                name: "02. LINH HOAT CBCNV 06.08.2025 - Tr.khai.pdf", 
-                displayName: "Linh hoạt CBCNV",
-                category: "linh-hoat", 
-                type: "pdf", 
-                size: "1.2 MB",
-                startDate: "2025-08-06",
-                note: "Chính sách linh hoạt CBCNV",
-                uploadDate: "2026-01-15",
-                isNew: false 
-            },
-            { 
-                name: "02. LINH HOAT TON CAN 01.08.2023 - Tr.khai (1).pdf", 
-                displayName: "Linh hoạt tôn cản",
-                category: "linh-hoat", 
-                type: "pdf", 
-                size: "1.3 MB",
-                startDate: "2023-08-01",
-                note: "Chính sách linh hoạt tôn cản",
-                uploadDate: "2026-01-15",
-                isNew: false 
-            },
-
-            // TÀI LIỆU ĐÀO TẠO
-            { 
-                name: "02. BG LE OT HS MAG SHIELD 01.12.2025 - Tr.Khai.pdf", 
-                displayName: "Bảng giá lẻ ống thép MAG SHIELD",
-                category: "tai-lieu", 
-                type: "pdf", 
-                size: "1.4 MB",
-                startDate: "2025-12-01",
-                note: "Bảng giá ống thép MAG SHIELD",
+                name: "Video đào tạo sản phẩm.mp4", 
+                displayName: "Video đào tạo sản phẩm",
+                category: "video", 
+                type: "video", 
+                size: "150 MB",
+                startDate: "2026-01-01",
+                note: "Video hướng dẫn sử dụng sản phẩm",
+                driveUrl: "https://drive.google.com/file/d/XYZ789/view",
                 uploadDate: "2026-01-15",
                 isNew: false 
             }
+            */
         ];
 
         // User management system
@@ -1437,6 +1072,7 @@
             tbody.innerHTML = documents.map((doc, index) => {
                 const catInfo = categoryLabels[doc.category];
                 const displayName = doc.displayName || getDisplayName(doc.name);
+                const isDrive = doc.driveUrl ? true : false;
                 
                 return `
                     <tr class="hover:bg-gray-50">
@@ -1456,7 +1092,13 @@
                             <span class="text-xs font-medium uppercase ${doc.type === 'video' ? 'text-purple-600' : (doc.type === 'pdf' ? 'text-red-600' : 'text-blue-600')}">${doc.type}</span>
                         </td>
                         <td class="px-4 py-3">
-                            <span class="text-gray-400 text-xs">Local file</span>
+                            ${isDrive ? 
+                                `<a href="${doc.driveUrl}" target="_blank" class="text-blue-600 hover:text-blue-800 text-xs flex items-center gap-1">
+                                    <i class="fab fa-google-drive"></i>
+                                    <span class="truncate max-w-[200px]">Mở Drive</span>
+                                </a>` : 
+                                '<span class="text-gray-400 text-xs">Local file</span>'
+                            }
                         </td>
                         <td class="px-4 py-3 text-xs text-gray-600">
                             ${doc.startDate ? formatDateDisplay(doc.startDate) : 'N/A'}
@@ -2020,36 +1662,70 @@
             const typeBadge = document.getElementById('viewer-type');
             const pdfViewer = document.getElementById('pdf-viewer');
             const wordNotice = document.getElementById('word-notice');
+            const driveNotice = document.getElementById('drive-notice');
+            const videoNotice = document.getElementById('video-notice');
             const downloadBtn = document.getElementById('download-btn');
             const wordDownloadBtn = document.getElementById('word-download-btn');
+            const driveOpenBtn = document.getElementById('drive-open-btn');
+            const videoOpenBtn = document.getElementById('video-open-btn');
+            
+            // Find document
+            const doc = documents.find(d => d.name === filename);
+            const driveUrl = doc && doc.driveUrl ? doc.driveUrl : null;
             
             title.textContent = getDisplayName(filename);
             
             // Hide all viewers first
             pdfViewer.classList.add('hidden');
             wordNotice.classList.add('hidden');
+            driveNotice.classList.add('hidden');
+            videoNotice.classList.add('hidden');
             
-            // Local file handling
-            if (type === 'pdf') {
-                typeBadge.textContent = 'PDF';
-                typeBadge.className = 'px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-700';
-                pdfViewer.classList.remove('hidden');
-                pdfViewer.src = filename;
-                downloadBtn.href = filename;
-            } else if (type === 'word') {
-                typeBadge.textContent = 'WORD';
-                typeBadge.className = 'px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-700';
-                wordNotice.classList.remove('hidden');
-                wordDownloadBtn.href = filename;
-                downloadBtn.href = filename;
-            } else if (type === 'video') {
-                typeBadge.textContent = 'VIDEO';
-                typeBadge.className = 'px-3 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-700';
-                // For local videos, just provide download link
-                wordNotice.classList.remove('hidden');
-                wordDownloadBtn.href = filename;
-                wordDownloadBtn.textContent = 'Download Video';
-                downloadBtn.href = filename;
+            if (driveUrl) {
+                // Google Drive file
+                if (type === 'video') {
+                    typeBadge.textContent = 'VIDEO';
+                    typeBadge.className = 'px-3 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-700';
+                    videoNotice.classList.remove('hidden');
+                    videoOpenBtn.href = driveUrl;
+                    downloadBtn.href = driveUrl;
+                } else if (type === 'pdf') {
+                    typeBadge.textContent = 'PDF (Drive)';
+                    typeBadge.className = 'px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-700';
+                    // Try to embed Drive preview
+                    const embedUrl = convertDriveLinkToEmbed(driveUrl);
+                    if (embedUrl !== driveUrl) {
+                        pdfViewer.classList.remove('hidden');
+                        pdfViewer.src = embedUrl;
+                    } else {
+                        driveNotice.classList.remove('hidden');
+                        driveOpenBtn.href = driveUrl;
+                    }
+                    downloadBtn.href = driveUrl;
+                } else {
+                    typeBadge.textContent = 'WORD (Drive)';
+                    typeBadge.className = 'px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-700';
+                    driveNotice.classList.remove('hidden');
+                    driveOpenBtn.href = driveUrl;
+                    downloadBtn.href = driveUrl;
+                }
+            } else {
+                // Local file
+                const filePath = `../${filename}`;
+                
+                if (type === 'pdf') {
+                    typeBadge.textContent = 'PDF';
+                    typeBadge.className = 'px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-700';
+                    pdfViewer.classList.remove('hidden');
+                    pdfViewer.src = filePath;
+                    downloadBtn.href = filePath;
+                } else {
+                    typeBadge.textContent = 'WORD';
+                    typeBadge.className = 'px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-700';
+                    wordNotice.classList.remove('hidden');
+                    wordDownloadBtn.href = filePath;
+                    downloadBtn.href = filePath;
+                }
             }
             
             modal.classList.add('active');
