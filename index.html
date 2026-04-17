@@ -291,12 +291,6 @@
                     </span>
                 </div>
                 <div class="flex gap-3 flex-wrap">
-                    <button onclick="openUserManageModal()" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition text-sm font-medium">
-                        <i class="fas fa-users mr-1"></i> Quản lý User
-                    </button>
-                    <button onclick="openManageModal()" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition text-sm font-medium">
-                        <i class="fas fa-list mr-1"></i> Quản lý tài liệu
-                    </button>
                     <button onclick="openDriveModal()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition text-sm font-medium">
                         <i class="fab fa-google-drive mr-1"></i> Thêm từ Drive
                     </button>
@@ -416,17 +410,9 @@
 
         <!-- Empty State -->
         <div id="empty-state" class="hidden glass-card p-12 text-center">
-            <i class="fab fa-google-drive text-6xl text-blue-400 mb-4"></i>
-            <h3 class="text-xl font-semibold text-gray-600 mb-2">Chưa có tài liệu nào</h3>
-            <p class="text-gray-500 mb-6">Admin cần thêm tài liệu từ Google Drive để bắt đầu</p>
-            <div id="admin-empty-actions" class="space-y-3">
-                <button onclick="openDriveModal()" class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition font-medium">
-                    <i class="fab fa-google-drive mr-2"></i>Thêm tài liệu từ Drive
-                </button>
-                <div class="text-sm text-gray-400">
-                    <p><i class="fas fa-info-circle mr-1"></i>Upload file lên Drive → Copy link → Thêm vào hệ thống</p>
-                </div>
-            </div>
+            <i class="fas fa-search text-6xl text-gray-300 mb-4"></i>
+            <h3 class="text-xl font-semibold text-gray-600">Không tìm thấy tài liệu</h3>
+            <p class="text-gray-500">Vui lòng thử tìm kiếm với từ khóa khác</p>
         </div>
     </div>
 
@@ -532,177 +518,6 @@
                     <button type="submit" 
                             class="flex-1 px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white rounded-xl transition font-medium shadow-lg">
                         <i class="fas fa-plus mr-1"></i> Thêm vào hệ thống
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Manage Documents Modal (Admin only) -->
-    <div id="manage-modal" class="login-modal">
-        <div class="glass-card p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-hidden flex flex-col">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-bold text-gray-800 flex items-center gap-2">
-                    <i class="fas fa-list text-green-600 text-2xl"></i>
-                    Quản lý tài liệu
-                </h3>
-                <button onclick="closeManageModal()" class="text-gray-500 hover:text-gray-700">
-                    <i class="fas fa-times text-xl"></i>
-                </button>
-            </div>
-            
-            <div class="mb-4 flex gap-3">
-                <button onclick="openDriveModal()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition text-sm">
-                    <i class="fab fa-google-drive mr-1"></i> Thêm tài liệu mới
-                </button>
-                <button onclick="exportDocumentList()" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition text-sm">
-                    <i class="fas fa-download mr-1"></i> Xuất danh sách
-                </button>
-                <div class="ml-auto text-sm text-gray-500 flex items-center">
-                    <i class="fas fa-info-circle mr-1"></i>
-                    Tổng: <span id="manage-total" class="font-bold ml-1">0</span> tài liệu
-                </div>
-            </div>
-            
-            <div class="overflow-y-auto flex-1 border rounded-lg">
-                <table class="w-full">
-                    <thead class="bg-gray-50 sticky top-0">
-                        <tr class="text-left text-xs font-medium text-gray-500 uppercase">
-                            <th class="px-4 py-3">Tên tài liệu</th>
-                            <th class="px-4 py-3">Danh mục</th>
-                            <th class="px-4 py-3">Loại</th>
-                            <th class="px-4 py-3">Link Drive</th>
-                            <th class="px-4 py-3">Ngày áp dụng</th>
-                            <th class="px-4 py-3 text-center">Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody id="manage-list" class="divide-y divide-gray-200">
-                        <!-- Documents will be listed here -->
-                    </tbody>
-                </table>
-                <div id="manage-empty" class="hidden p-8 text-center text-gray-500">
-                    <i class="fas fa-folder-open text-4xl mb-3"></i>
-                    <p>Chưa có tài liệu nào</p>
-                    <button onclick="openDriveModal()" class="mt-3 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition text-sm">
-                        <i class="fab fa-google-drive mr-1"></i> Thêm tài liệu đầu tiên
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- User Management Modal (Admin only) -->
-    <div id="user-manage-modal" class="login-modal">
-        <div class="glass-card p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-hidden flex flex-col">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-bold text-gray-800 flex items-center gap-2">
-                    <i class="fas fa-users text-purple-600 text-2xl"></i>
-                    Quản lý User
-                </h3>
-                <button onclick="closeUserManageModal()" class="text-gray-500 hover:text-gray-700">
-                    <i class="fas fa-times text-xl"></i>
-                </button>
-            </div>
-            
-            <div class="mb-4 flex gap-3">
-                <button onclick="openCreateUserModal()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition text-sm">
-                    <i class="fas fa-user-plus mr-1"></i> Tạo User mới
-                </button>
-                <div class="ml-auto text-sm text-gray-500 flex items-center">
-                    <i class="fas fa-info-circle mr-1"></i>
-                    Tổng: <span id="user-total" class="font-bold ml-1">0</span> users
-                </div>
-            </div>
-            
-            <div class="overflow-y-auto flex-1 border rounded-lg">
-                <table class="w-full">
-                    <thead class="bg-gray-50 sticky top-0">
-                        <tr class="text-left text-xs font-medium text-gray-500 uppercase">
-                            <th class="px-4 py-3">Username</th>
-                            <th class="px-4 py-3">Họ tên</th>
-                            <th class="px-4 py-3">Vai trò</th>
-                            <th class="px-4 py-3">Trạng thái</th>
-                            <th class="px-4 py-3">Ngày tạo</th>
-                            <th class="px-4 py-3">Đăng nhập cuối</th>
-                            <th class="px-4 py-3 text-center">Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody id="user-list" class="divide-y divide-gray-200">
-                        <!-- Users will be listed here -->
-                    </tbody>
-                </table>
-                <div id="user-empty" class="hidden p-8 text-center text-gray-500">
-                    <i class="fas fa-users text-4xl mb-3"></i>
-                    <p>Chưa có user nào</p>
-                    <button onclick="openCreateUserModal()" class="mt-3 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition text-sm">
-                        <i class="fas fa-user-plus mr-1"></i> Tạo user đầu tiên
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Create User Modal (Admin only) -->
-    <div id="create-user-modal" class="login-modal">
-        <div class="glass-card p-6 max-w-md w-full mx-4">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-bold text-gray-800 flex items-center gap-2">
-                    <i class="fas fa-user-plus text-blue-600"></i>
-                    Tạo User mới
-                </h3>
-                <button onclick="closeCreateUserModal()" class="text-gray-500 hover:text-gray-700">
-                    <i class="fas fa-times text-xl"></i>
-                </button>
-            </div>
-            
-            <form id="create-user-form" onsubmit="handleCreateUser(event)">
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Username <span class="text-red-500">*</span></label>
-                    <input type="text" id="new-username" required
-                           class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none"
-                           placeholder="VD: nhanvien01">
-                </div>
-                
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Password <span class="text-red-500">*</span></label>
-                    <input type="password" id="new-password" required
-                           class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none"
-                           placeholder="Nhập password">
-                </div>
-                
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Họ tên <span class="text-red-500">*</span></label>
-                    <input type="text" id="new-fullname" required
-                           class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none"
-                           placeholder="VD: Nguyễn Văn A">
-                </div>
-                
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Vai trò <span class="text-red-500">*</span></label>
-                    <select id="new-role" required
-                            class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none">
-                        <option value="user">User</option>
-                        <option value="admin">Admin</option>
-                    </select>
-                </div>
-                
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Email (tùy chọn)</label>
-                    <input type="email" id="new-email"
-                           class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none"
-                           placeholder="VD: nhanvien@hoasenhome.com">
-                </div>
-                
-                <div id="create-user-error" class="hidden mb-4 p-3 bg-red-100 text-red-700 rounded-lg text-sm"></div>
-                
-                <div class="flex gap-3">
-                    <button type="button" onclick="closeCreateUserModal()" 
-                            class="flex-1 px-4 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-xl transition font-medium">
-                        Hủy
-                    </button>
-                    <button type="submit" 
-                            class="flex-1 px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white rounded-xl transition font-medium shadow-lg">
-                        <i class="fas fa-user-plus mr-1"></i> Tạo User
                     </button>
                 </div>
             </form>
@@ -865,54 +680,67 @@
     </div>
 
     <script>
-        // User management data
-        let users = [
-            {
-                username: 'admin',
-                password: 'admin123',
-                fullname: 'Administrator',
-                role: 'admin',
-                email: 'admin@hoasenhome.com',
-                createdDate: '2026-01-01',
-                lastLogin: null,
-                status: 'active'
-            }
-        ];
-
-        let currentUser = null;
-        let isAdminLoggedIn = false;
-
-        // Document data - Google Drive links
-        let documents = [
-            // PASTE LINK DRIVE TẠI ĐÂY
-            // Ví dụ mẫu:
-            /*
-            { 
-                name: "Chính sách bán hàng Q1/2026.pdf", 
-                displayName: "Chính sách bán hàng Q1/2026",
-                category: "chinh-sach", 
-                type: "pdf", 
-                size: "2.5 MB",
-                startDate: "2026-01-01",
-                endDate: "",
-                note: "Chính sách mới cho Q1/2026",
-                driveUrl: "https://drive.google.com/file/d/ABC123/view",
-                uploadDate: "2026-01-15",
-                isNew: false 
-            },
-            { 
-                name: "Video đào tạo sản phẩm.mp4", 
-                displayName: "Video đào tạo sản phẩm",
-                category: "video", 
-                type: "video", 
-                size: "150 MB",
-                startDate: "2026-01-01",
-                note: "Video hướng dẫn sử dụng sản phẩm",
-                driveUrl: "https://drive.google.com/file/d/XYZ789/view",
-                uploadDate: "2026-01-15",
-                isNew: false 
-            }
-            */
+        // Document data - will be populated
+        const documents = [
+            // PDF Files - Chính sách & Quy định
+            { name: "00. CS LHKV BONG GIO LUSTILE 01.12.2025 - Tr.Khai.pdf", category: "linh-hoat", type: "pdf", size: "313 KB" },
+            { name: "00. QUY DINH CHI HHMG.pdf", category: "quy-dinh", type: "pdf", size: "2.3 MB" },
+            { name: "01. BANG GIA CONG BO TON CAN 01.12.2025 - tr.khai.pdf", category: "bang-gia", type: "pdf", size: "511 KB" },
+            { name: "01. BANG GIA GACH BONG GIO LUSTILE 01.12.2025 - Tr.Khai.pdf", category: "bang-gia", type: "pdf", size: "460 KB" },
+            { name: "01. BANG GIA NOI BO TON HOA SEN GOLD 01.12.2025 - Tr.khai.pdf", category: "bang-gia", type: "pdf", size: "375 KB" },
+            { name: "01. BANG GIA SON KIM LOAI LUSCOAT 01.12.2025 - Trkhai.pdf", category: "bang-gia", type: "pdf", size: "194 KB" },
+            { name: "01. BG BAN BN INOX LUSWELL 01.12.2025 - Tr.Khai.pdf", category: "bang-gia", type: "pdf", size: "485 KB" },
+            { name: "01. BG CONG BO TON CACH NHIET 01.12.2025 - Tr.khai.pdf", category: "bang-gia", type: "pdf", size: "389 KB" },
+            { name: "01. BG CONG BO TON HOA SEN GOLD - 01.12.2025 - Tr. khai.pdf", category: "bang-gia", type: "pdf", size: "465 KB" },
+            { name: "01. BG CONG BO TON HOA SEN GOLD - 01.12.2025 - tr.khai.pdf", category: "bang-gia", type: "pdf", size: "293 KB" },
+            { name: "01. CHI HOA HONG MOI GIOI SAN PHAM SAN XUAT 01.01.2025 - Trkhai.pdf", category: "chinh-sach", type: "pdf", size: "607 KB" },
+            { name: "01. CS BAN MAU CHO SPTM 11.06.2025 _Tr.Khai.pdf", category: "chinh-sach", type: "pdf", size: "317 KB" },
+            { name: "01. CS DINH MUC TBNT & NB 01.12.2025 - Tr.Khai.pdf", category: "chinh-sach", type: "pdf", size: "316 KB" },
+            { name: "01. CS KINH DOANH CHO SPTM 01.12.2025 - Tr.Khai.pdf", category: "chinh-sach", type: "pdf", size: "489 KB" },
+            { name: "01. CS ĐM CUỐI T11.2025 - 27.11.2025 - tr.khai.pdf", category: "chinh-sach", type: "pdf", size: "363 KB" },
+            { name: "01. CS ĐM NGÀY 28.11.2025 - tr.khai.pdf", category: "chinh-sach", type: "pdf", size: "362 KB" },
+            { name: "01. CSKD HÀNG LOAI 2, A1-XKRL 01.12.2025 - Tr.khai NB.PDF", category: "chinh-sach", type: "pdf", size: "227 KB" },
+            { name: "01. CSKD HÀNG LOAI 2, A1-XKRL 01.12.2025 - Tr.khai NĐ.pdf", category: "chinh-sach", type: "pdf", size: "329 KB" },
+            { name: "01. LH TON THEP CONG TRINH 01.12.2025 - Tr.khai.pdf", category: "linh-hoat", type: "pdf", size: "323 KB" },
+            { name: "01. QUY DINH HANG HOA GUI KHO CAC ĐVKD 16.01.2025 - Tr.khai.pdf", category: "quy-dinh", type: "pdf", size: "323 KB" },
+            { name: "02. BG LE OT HS MAG SHIELD 01.12.2025 - Tr.Khai.pdf", category: "bang-gia", type: "pdf", size: "470 KB" },
+            { name: "02. CS ƯU DAI LUSWELL 01.12.2025_ Trkhai.pdf", category: "chinh-sach", type: "pdf", size: "212 KB" },
+            { name: "02. CSCK  HO TRO CHO GACH NGOI _ 01.12.2025 - Tr.Khai.pdf", category: "chinh-sach", type: "pdf", size: "315 KB" },
+            { name: "02. LHKV OT 01.12.2025 - tr.khai.pdf", category: "linh-hoat", type: "pdf", size: "368 KB" },
+            { name: "02. LHKV TON MA, TDM 01.12.2025 - Tr.khai.pdf", category: "linh-hoat", type: "pdf", size: "543 KB" },
+            { name: "02. LHKV TON, TDM, OT NOI BO 01.12.2025 - Tr.khai.pdf", category: "linh-hoat", type: "pdf", size: "479 KB" },
+            { name: "02. LINH HOAT CBCNV 06.08.2025 - Tr.khai.pdf", category: "linh-hoat", type: "pdf", size: "527 KB" },
+            { name: "02. LINH HOAT TON CAN 01.08.2023 - Tr.khai (1).pdf", category: "linh-hoat", type: "pdf", size: "336 KB" },
+            { name: "03. BANG GIA OTMK LE 01.12.2025 - tr.khai.pdf", category: "bang-gia", type: "pdf", size: "500 KB" },
+            { name: "05. CS DINH MUC HO TRO GACH LUSTRA 01.12.2025 - Tr.khai.pdf", category: "chinh-sach", type: "pdf", size: "315 KB" },
+            { name: "06. CK HT KHTT 28.11.2025 (SL 26-27.11)- tr.khai.pdf", category: "chinh-sach", type: "pdf", size: "363 KB" },
+            { name: "1. CHI HOA HONG MOI GIOI SAN PHAM THUONG MAI 01.07.2025 - Tr.Khai.pdf", category: "chinh-sach", type: "pdf", size: "401 KB" },
+            { name: "2018-04-09- KIỂM KÊ TĂNG CƯỜNG HÀNG HÓA.pdf", category: "quy-dinh", type: "pdf", size: "893 KB" },
+            { name: "BM_01_ĐCCN_HSH.pdf", category: "quy-dinh", type: "pdf", size: "356 KB" },
+            { name: "NỘI QUY LAO ĐỘNG_CTCP HSH 2026.pdf", category: "quy-dinh", type: "pdf", size: "11.1 MB" },
+            { name: "PCPN và UQ cho chuc danh GD-PGDCNT, GDCN va CHT thuoc HTHSH.pdf", category: "quy-dinh", type: "pdf", size: "2.4 MB" },
+            { name: "Phân quyền cho GĐ Chi nhánh Tỉnh, GĐ Chi nhánh, CHT.pdf", category: "quy-dinh", type: "pdf", size: "1.4 MB" },
+            { name: "QT QUẢN LÝ HÀNG HÓA BỂ VỠ TẠI  HOA SEN HOME-LBH01.pdf", category: "quy-dinh", type: "pdf", size: "5.1 MB" },
+            { name: "QUY TRINH QUAN LY TIEN TAI CHI NHANH - CUA HANG 01.11.2024.pdf", category: "quy-dinh", type: "pdf", size: "7.1 MB" },
+            { name: "QUY ĐỊNH PHẠT ĐỐI VỚI HÀNG HÓA CẮT SAI QUY CÁCH.pdf", category: "quy-dinh", type: "pdf", size: "334 KB" },
+            { name: "QUY ĐỊNH ĐỐI CHIẾU CÔNG NỢ VÀ KIỂM KÊ ĐỊNH KỲ HÀNG THÁNG (ĐIỀU CHỈNH MỚI ÁP DỤNG TỪ NGÀY 01.12.2025).pdf", category: "quy-dinh", type: "pdf", size: "1.1 MB" },
+            { name: "Quy định mã hoá vị trí và gián tem.pdf", category: "quy-dinh", type: "pdf", size: "6.9 MB" },
+            { name: "Quy định quản lý hàng hóa HTPP (1) (1).pdf", category: "quy-dinh", type: "pdf", size: "5.6 MB" },
+            { name: "QĐ Quản lý, kiểm soát hàng hóa thương mại tại Cửa hàng Hoa Sen Home (1) (1).pdf", category: "quy-dinh", type: "pdf", size: "3.4 MB" },
+            { name: "THƯ THÔNG BÁO CHÍNH SÁCH BÁN MẪU - 23.01.2026.pdf", category: "chinh-sach", type: "pdf", size: "3.3 MB" },
+            { name: "Thông báo Quy định ký quỹ đối với đơn vị vận chuyển và tài xế.pdf", category: "quy-dinh", type: "pdf", size: "1.6 MB" },
+            
+            // Word Files - Tài liệu đào tạo
+            { name: "BCHV final.docx", category: "tai-lieu", type: "word", size: "4.5 MB" },
+            { name: "Báo cáo Kết thúc học việc - Chỉnh lại - Copy.docx", category: "tai-lieu", type: "word", size: "103 KB" },
+            { name: "Chương 1 - Kiểm Soát Tỉnh là ai.docx", category: "tai-lieu", type: "word", size: "171 KB" },
+            { name: "Chương 2 -  CÔNG TÁC QUẢN LÝ, ĐIỀU PHỐI NHÂN SỰ VÀ KIỂM SOÁT RỦI RO TỪ XA (Chốt).docx", category: "tai-lieu", type: "word", size: "52 KB" },
+            { name: "Chương 3 - Quy định chính sách.docx", category: "tai-lieu", type: "word", size: "62 KB" },
+            { name: "Chương 4 - Kiểm Tra Hệ Thống.docx", category: "tai-lieu", type: "word", size: "1.0 MB" },
+            { name: "Chương 5 -  NGHIỆP VỤ VÀ CÁC KỸ NĂNG LIÊN QUAN ĐẾN CÔNG TÁC KIỂM SOÁT 17.05.docx", category: "tai-lieu", type: "word", size: "88 KB" },
+            { name: "Chương 6 -  CÁC KỸ NĂNG BỔ TRỢ - Chỉ cần đọc qua để nắm.docx", category: "tai-lieu", type: "word", size: "225 KB" },
+            { name: "Thông báo Quy định ký quỹ đối với đơn vị vận chuyển và tài xế.docx", category: "quy-dinh", type: "word", size: "18 KB" },
+            { name: "TÀI LIỆU SƠ CẤP-FINAL.docx", category: "tai-lieu", type: "word", size: "4.7 MB" }
         ];
 
         const categoryLabels = {
@@ -974,6 +802,8 @@
         // Admin credentials (in production, this should be server-side)
         const ADMIN_USERNAME = 'admin';
         const ADMIN_PASSWORD = 'admin123';
+        let isAdminLoggedIn = false;
+        let currentUser = null;
         let currentTab = 'all';
         let currentTrainingDoc = null;
         let scannedNewDocs = [];
@@ -1277,29 +1107,16 @@
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             
-            const user = users.find(u => u.username === username && u.password === password && u.status === 'active');
-            
-            if (user) {
-                currentUser = user;
-                isAdminLoggedIn = user.role === 'admin';
-                
-                // Update last login
-                user.lastLogin = new Date().toISOString();
-                saveUsers();
-                
+            if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+                isAdminLoggedIn = true;
                 closeLoginModal();
                 updateAdminUI();
-                showNotification(`Chào mừng ${user.fullname}!`, 'success');
             } else {
                 document.getElementById('login-error').classList.remove('hidden');
             }
         }
 
         function logout() {
-            if (currentUser) {
-                showNotification(`Tạm biệt ${currentUser.fullname}!`, 'info');
-            }
-            currentUser = null;
             isAdminLoggedIn = false;
             updateAdminUI();
         }
@@ -1308,34 +1125,11 @@
             const adminBadge = document.getElementById('admin-badge');
             const logoutBtn = document.getElementById('logout-btn');
             const adminPanel = document.getElementById('admin-panel');
-            const loginBtn = document.getElementById('login-btn');
             
-            if (currentUser) {
-                // User is logged in
-                adminBadge.classList.remove('hidden');
-                logoutBtn.classList.remove('hidden');
-                loginBtn.classList.add('hidden');
-                
-                // Show admin panel only for admin users
-                if (isAdminLoggedIn) {
-                    adminPanel.classList.remove('hidden');
-                } else {
-                    adminPanel.classList.add('hidden');
-                }
-                
-                // Update admin badge text
-                adminBadge.innerHTML = `
-                    <i class="fas fa-user-circle mr-1"></i>
-                    ${currentUser.fullname} 
-                    ${isAdminLoggedIn ? '<span class="ml-2 px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">Admin</span>' : ''}
-                `;
-            } else {
-                // User is not logged in
-                adminBadge.classList.add('hidden');
-                logoutBtn.classList.add('hidden');
-                loginBtn.classList.remove('hidden');
-                adminPanel.classList.add('hidden');
-            }
+            // Always show admin features since we're already logged in
+            adminBadge.classList.remove('hidden');
+            logoutBtn.classList.remove('hidden');
+            adminPanel.classList.add('active');
         }
 
         function applyDateFilter() {
@@ -1373,226 +1167,6 @@
 
         function closeDriveModal() {
             document.getElementById('drive-modal').classList.remove('active');
-        }
-
-        // Manage Documents functions
-        function openManageModal() {
-            if (!isAdminLoggedIn) return;
-            document.getElementById('manage-modal').classList.add('active');
-            renderManageList();
-        }
-
-        function closeManageModal() {
-            document.getElementById('manage-modal').classList.remove('active');
-        }
-
-        function renderManageList() {
-            const tbody = document.getElementById('manage-list');
-            const empty = document.getElementById('manage-empty');
-            const total = document.getElementById('manage-total');
-            
-            total.textContent = documents.length;
-            
-            if (documents.length === 0) {
-                tbody.classList.add('hidden');
-                empty.classList.remove('hidden');
-                return;
-            }
-            
-            tbody.classList.remove('hidden');
-            empty.classList.add('hidden');
-            
-            tbody.innerHTML = documents.map((doc, index) => {
-                const catInfo = categoryLabels[doc.category];
-                const displayName = doc.displayName || getDisplayName(doc.name);
-                const isDrive = doc.driveUrl ? true : false;
-                
-                return `
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-4 py-3">
-                            <div class="flex items-center gap-2">
-                                <i class="fas ${getFileIcon(doc.type)}"></i>
-                                <div>
-                                    <div class="font-medium text-sm">${displayName}</div>
-                                    <div class="text-xs text-gray-500">${doc.size}</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="px-4 py-3">
-                            <span class="category-badge ${catInfo.color} text-xs">${catInfo.label}</span>
-                        </td>
-                        <td class="px-4 py-3">
-                            <span class="text-xs font-medium uppercase ${doc.type === 'video' ? 'text-purple-600' : (doc.type === 'pdf' ? 'text-red-600' : 'text-blue-600')}">${doc.type}</span>
-                        </td>
-                        <td class="px-4 py-3">
-                            ${isDrive ? 
-                                `<a href="${doc.driveUrl}" target="_blank" class="text-blue-600 hover:text-blue-800 text-xs flex items-center gap-1">
-                                    <i class="fab fa-google-drive"></i>
-                                    <span class="truncate max-w-[200px]">Mở Drive</span>
-                                </a>` : 
-                                '<span class="text-gray-400 text-xs">Local file</span>'
-                            }
-                        </td>
-                        <td class="px-4 py-3 text-xs text-gray-600">
-                            ${doc.startDate ? formatDateDisplay(doc.startDate) : 'N/A'}
-                        </td>
-                        <td class="px-4 py-3 text-center">
-                            <button onclick="deleteDocument(${index})" class="text-red-600 hover:text-red-800 text-sm">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        function deleteDocument(index) {
-            if (confirm('Bạn có chắc muốn xóa tài liệu này?')) {
-                documents.splice(index, 1);
-                saveDocuments();
-                renderManageList();
-                updateStats();
-                renderDocuments(documents);
-                showNotification('Đã xóa tài liệu', 'success');
-            }
-        }
-
-        // User Management functions
-        function openUserManageModal() {
-            if (!isAdminLoggedIn) return;
-            document.getElementById('user-manage-modal').classList.add('active');
-            renderUserList();
-        }
-
-        function closeUserManageModal() {
-            document.getElementById('user-manage-modal').classList.remove('active');
-        }
-
-        function openCreateUserModal() {
-            document.getElementById('create-user-modal').classList.add('active');
-            document.getElementById('create-user-form').reset();
-            document.getElementById('create-user-error').classList.add('hidden');
-        }
-
-        function closeCreateUserModal() {
-            document.getElementById('create-user-modal').classList.remove('active');
-        }
-
-        function renderUserList() {
-            const tbody = document.getElementById('user-list');
-            const empty = document.getElementById('user-empty');
-            const total = document.getElementById('user-total');
-            
-            total.textContent = users.length;
-            
-            if (users.length === 0) {
-                tbody.classList.add('hidden');
-                empty.classList.remove('hidden');
-                return;
-            }
-            
-            tbody.classList.remove('hidden');
-            empty.classList.add('hidden');
-            
-            tbody.innerHTML = users.map((user, index) => {
-                const roleBadge = user.role === 'admin' ? 
-                    '<span class="px-2 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-700">Admin</span>' :
-                    '<span class="px-2 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-700">User</span>';
-                
-                const statusBadge = user.status === 'active' ?
-                    '<span class="px-2 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700">Hoạt động</span>' :
-                    '<span class="px-2 py-1 rounded-full text-xs font-bold bg-red-100 text-red-700">Khóa</span>';
-                
-                const lastLogin = user.lastLogin ? 
-                    new Date(user.lastLogin).toLocaleString('vi-VN') : 'Chưa đăng nhập';
-                
-                const canDelete = user.username !== 'admin';
-                
-                return `
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-4 py-3 font-medium">${user.username}</td>
-                        <td class="px-4 py-3">${user.fullname}</td>
-                        <td class="px-4 py-3">${roleBadge}</td>
-                        <td class="px-4 py-3">${statusBadge}</td>
-                        <td class="px-4 py-3 text-sm text-gray-600">${user.createdDate}</td>
-                        <td class="px-4 py-3 text-sm text-gray-600">${lastLogin}</td>
-                        <td class="px-4 py-3 text-center">
-                            ${canDelete ? 
-                                `<button onclick="deleteUser(${index})" class="text-red-600 hover:text-red-800 text-sm" title="Xóa user">
-                                    <i class="fas fa-trash"></i>
-                                </button>` :
-                                '<span class="text-gray-300 text-sm" title="Không thể xóa admin"><i class="fas fa-shield-alt"></i></span>'
-                            }
-                        </td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        function handleCreateUser(e) {
-            e.preventDefault();
-            const errorDiv = document.getElementById('create-user-error');
-            
-            const username = document.getElementById('new-username').value.trim();
-            const password = document.getElementById('new-password').value;
-            const fullname = document.getElementById('new-fullname').value.trim();
-            const role = document.getElementById('new-role').value;
-            const email = document.getElementById('new-email').value.trim();
-            
-            // Validation
-            if (users.find(u => u.username === username)) {
-                errorDiv.textContent = 'Username đã tồn tại!';
-                errorDiv.classList.remove('hidden');
-                return;
-            }
-            
-            if (password.length < 6) {
-                errorDiv.textContent = 'Password phải có ít nhất 6 ký tự!';
-                errorDiv.classList.remove('hidden');
-                return;
-            }
-            
-            // Create new user
-            const newUser = {
-                username: username,
-                password: password,
-                fullname: fullname,
-                role: role,
-                email: email,
-                createdDate: new Date().toISOString().split('T')[0],
-                lastLogin: null,
-                status: 'active'
-            };
-            
-            users.push(newUser);
-            saveUsers();
-            
-            errorDiv.classList.add('hidden');
-            closeCreateUserModal();
-            renderUserList();
-            
-            showNotification(`Đã tạo user "${username}" thành công!`, 'success');
-        }
-
-        function deleteUser(index) {
-            const user = users[index];
-            if (confirm(`Bạn có chắc muốn xóa user "${user.fullname}" (${user.username})?`)) {
-                users.splice(index, 1);
-                saveUsers();
-                renderUserList();
-                showNotification('Đã xóa user', 'success');
-            }
-        }
-
-        function saveUsers() {
-            localStorage.setItem('kst_users', JSON.stringify(users));
-        }
-
-        function loadUsers() {
-            const saved = localStorage.getItem('kst_users');
-            if (saved) {
-                users = JSON.parse(saved);
-            }
         }
 
         function handleDriveAdd(e) {
@@ -1646,11 +1220,6 @@
             showNotification('Đã thêm tài liệu từ Drive thành công!', 'success');
             updateStats();
             filterDocuments();
-            
-            // Refresh manage modal if open
-            if (document.getElementById('manage-modal').classList.contains('active')) {
-                renderManageList();
-            }
         }
 
         function convertDriveLinkToEmbed(url) {
@@ -1891,7 +1460,6 @@
         function renderDocuments(docs) {
             const grid = document.getElementById('document-grid');
             const emptyState = document.getElementById('empty-state');
-            const adminActions = document.getElementById('admin-empty-actions');
             
             // Filter based on current tab
             let filteredDocs = docs;
@@ -1902,19 +1470,14 @@
             }
             
             if (filteredDocs.length === 0) {
-                grid.classList.add('hidden');
+                grid.innerHTML = '';
                 emptyState.classList.remove('hidden');
-                
-                // Show admin actions only if admin and no documents at all
-                if (isAdminLoggedIn && docs.length === 0) {
-                    adminActions.classList.remove('hidden');
-                } else {
-                    adminActions.classList.add('hidden');
-                }
+                const msg = currentTab === 'training' ? 'Chưa có tài liệu đào tạo nào!' : 
+                           currentTab === 'new' ? 'Không có tài liệu mới!' : 'Không tìm thấy tài liệu';
+                emptyState.querySelector('h3').textContent = msg;
                 return;
             }
             
-            grid.classList.remove('hidden');
             emptyState.classList.add('hidden');
             grid.innerHTML = filteredDocs.map(doc => {
                 const catInfo = categoryLabels[doc.category];
@@ -2163,9 +1726,6 @@
                 closeTrainingModal();
                 closeScanModal();
                 closeDriveModal();
-                closeManageModal();
-                closeUserManageModal();
-                closeCreateUserModal();
             }
         });
         
@@ -2177,21 +1737,6 @@
         // Close drive modal on click outside
         document.getElementById('drive-modal').addEventListener('click', (e) => {
             if (e.target.id === 'drive-modal') closeDriveModal();
-        });
-        
-        // Close manage modal on click outside
-        document.getElementById('manage-modal').addEventListener('click', (e) => {
-            if (e.target.id === 'manage-modal') closeManageModal();
-        });
-        
-        // Close user manage modal on click outside
-        document.getElementById('user-manage-modal').addEventListener('click', (e) => {
-            if (e.target.id === 'user-manage-modal') closeUserManageModal();
-        });
-        
-        // Close create user modal on click outside
-        document.getElementById('create-user-modal').addEventListener('click', (e) => {
-            if (e.target.id === 'create-user-modal') closeCreateUserModal();
         });
         
         // Close training modal on click outside
@@ -2213,38 +1758,17 @@
             if (e.target.id === 'date-list-modal') closeDateListModal();
         });
 
-        // Load documents from JSON file
-        async function loadDocumentsFromJSON() {
-            try {
-                const response = await fetch('./documents.json');
-                if (response.ok) {
-                    const jsonDocs = await response.json();
-                    documents = jsonDocs;
-                    console.log('Loaded', documents.length, 'documents from JSON');
-                } else {
-                    console.log('No documents.json found, using empty array');
-                }
-            } catch (error) {
-                console.log('Error loading documents.json:', error);
-            }
-        }
-
         // Initialize
-        loadUsers();
-        loadDocumentsFromJSON().then(() => {
-            // Load any saved documents from localStorage (new additions)
-            loadDocuments();
-            updateStats();
-            updateTrainingProgress();
-            renderDocuments(documents);
-            
-            // Auto-check for new files if admin
-            setTimeout(() => {
-                if (isAdminLoggedIn) {
-                    checkForNewFiles();
-                }
-            }, 2000);
-        });
+        updateStats();
+        updateTrainingProgress();
+        renderDocuments(documents);
+        
+        // Auto-check for new files if admin
+        setTimeout(() => {
+            if (isAdminLoggedIn) {
+                checkForNewFiles();
+            }
+        }, 2000);
     </script>
 </body>
 </html>
