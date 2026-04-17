@@ -680,69 +680,9 @@
     </div>
 
     <script>
-        // Document data - will be populated
-        const documents = [
-            // PDF Files - Chính sách & Quy định
-            { name: "00. CS LHKV BONG GIO LUSTILE 01.12.2025 - Tr.Khai.pdf", category: "linh-hoat", type: "pdf", size: "313 KB" },
-            { name: "00. QUY DINH CHI HHMG.pdf", category: "quy-dinh", type: "pdf", size: "2.3 MB" },
-            { name: "01. BANG GIA CONG BO TON CAN 01.12.2025 - tr.khai.pdf", category: "bang-gia", type: "pdf", size: "511 KB" },
-            { name: "01. BANG GIA GACH BONG GIO LUSTILE 01.12.2025 - Tr.Khai.pdf", category: "bang-gia", type: "pdf", size: "460 KB" },
-            { name: "01. BANG GIA NOI BO TON HOA SEN GOLD 01.12.2025 - Tr.khai.pdf", category: "bang-gia", type: "pdf", size: "375 KB" },
-            { name: "01. BANG GIA SON KIM LOAI LUSCOAT 01.12.2025 - Trkhai.pdf", category: "bang-gia", type: "pdf", size: "194 KB" },
-            { name: "01. BG BAN BN INOX LUSWELL 01.12.2025 - Tr.Khai.pdf", category: "bang-gia", type: "pdf", size: "485 KB" },
-            { name: "01. BG CONG BO TON CACH NHIET 01.12.2025 - Tr.khai.pdf", category: "bang-gia", type: "pdf", size: "389 KB" },
-            { name: "01. BG CONG BO TON HOA SEN GOLD - 01.12.2025 - Tr. khai.pdf", category: "bang-gia", type: "pdf", size: "465 KB" },
-            { name: "01. BG CONG BO TON HOA SEN GOLD - 01.12.2025 - tr.khai.pdf", category: "bang-gia", type: "pdf", size: "293 KB" },
-            { name: "01. CHI HOA HONG MOI GIOI SAN PHAM SAN XUAT 01.01.2025 - Trkhai.pdf", category: "chinh-sach", type: "pdf", size: "607 KB" },
-            { name: "01. CS BAN MAU CHO SPTM 11.06.2025 _Tr.Khai.pdf", category: "chinh-sach", type: "pdf", size: "317 KB" },
-            { name: "01. CS DINH MUC TBNT & NB 01.12.2025 - Tr.Khai.pdf", category: "chinh-sach", type: "pdf", size: "316 KB" },
-            { name: "01. CS KINH DOANH CHO SPTM 01.12.2025 - Tr.Khai.pdf", category: "chinh-sach", type: "pdf", size: "489 KB" },
-            { name: "01. CS ĐM CUỐI T11.2025 - 27.11.2025 - tr.khai.pdf", category: "chinh-sach", type: "pdf", size: "363 KB" },
-            { name: "01. CS ĐM NGÀY 28.11.2025 - tr.khai.pdf", category: "chinh-sach", type: "pdf", size: "362 KB" },
-            { name: "01. CSKD HÀNG LOAI 2, A1-XKRL 01.12.2025 - Tr.khai NB.PDF", category: "chinh-sach", type: "pdf", size: "227 KB" },
-            { name: "01. CSKD HÀNG LOAI 2, A1-XKRL 01.12.2025 - Tr.khai NĐ.pdf", category: "chinh-sach", type: "pdf", size: "329 KB" },
-            { name: "01. LH TON THEP CONG TRINH 01.12.2025 - Tr.khai.pdf", category: "linh-hoat", type: "pdf", size: "323 KB" },
-            { name: "01. QUY DINH HANG HOA GUI KHO CAC ĐVKD 16.01.2025 - Tr.khai.pdf", category: "quy-dinh", type: "pdf", size: "323 KB" },
-            { name: "02. BG LE OT HS MAG SHIELD 01.12.2025 - Tr.Khai.pdf", category: "bang-gia", type: "pdf", size: "470 KB" },
-            { name: "02. CS ƯU DAI LUSWELL 01.12.2025_ Trkhai.pdf", category: "chinh-sach", type: "pdf", size: "212 KB" },
-            { name: "02. CSCK  HO TRO CHO GACH NGOI _ 01.12.2025 - Tr.Khai.pdf", category: "chinh-sach", type: "pdf", size: "315 KB" },
-            { name: "02. LHKV OT 01.12.2025 - tr.khai.pdf", category: "linh-hoat", type: "pdf", size: "368 KB" },
-            { name: "02. LHKV TON MA, TDM 01.12.2025 - Tr.khai.pdf", category: "linh-hoat", type: "pdf", size: "543 KB" },
-            { name: "02. LHKV TON, TDM, OT NOI BO 01.12.2025 - Tr.khai.pdf", category: "linh-hoat", type: "pdf", size: "479 KB" },
-            { name: "02. LINH HOAT CBCNV 06.08.2025 - Tr.khai.pdf", category: "linh-hoat", type: "pdf", size: "527 KB" },
-            { name: "02. LINH HOAT TON CAN 01.08.2023 - Tr.khai (1).pdf", category: "linh-hoat", type: "pdf", size: "336 KB" },
-            { name: "03. BANG GIA OTMK LE 01.12.2025 - tr.khai.pdf", category: "bang-gia", type: "pdf", size: "500 KB" },
-            { name: "05. CS DINH MUC HO TRO GACH LUSTRA 01.12.2025 - Tr.khai.pdf", category: "chinh-sach", type: "pdf", size: "315 KB" },
-            { name: "06. CK HT KHTT 28.11.2025 (SL 26-27.11)- tr.khai.pdf", category: "chinh-sach", type: "pdf", size: "363 KB" },
-            { name: "1. CHI HOA HONG MOI GIOI SAN PHAM THUONG MAI 01.07.2025 - Tr.Khai.pdf", category: "chinh-sach", type: "pdf", size: "401 KB" },
-            { name: "2018-04-09- KIỂM KÊ TĂNG CƯỜNG HÀNG HÓA.pdf", category: "quy-dinh", type: "pdf", size: "893 KB" },
-            { name: "BM_01_ĐCCN_HSH.pdf", category: "quy-dinh", type: "pdf", size: "356 KB" },
-            { name: "NỘI QUY LAO ĐỘNG_CTCP HSH 2026.pdf", category: "quy-dinh", type: "pdf", size: "11.1 MB" },
-            { name: "PCPN và UQ cho chuc danh GD-PGDCNT, GDCN va CHT thuoc HTHSH.pdf", category: "quy-dinh", type: "pdf", size: "2.4 MB" },
-            { name: "Phân quyền cho GĐ Chi nhánh Tỉnh, GĐ Chi nhánh, CHT.pdf", category: "quy-dinh", type: "pdf", size: "1.4 MB" },
-            { name: "QT QUẢN LÝ HÀNG HÓA BỂ VỠ TẠI  HOA SEN HOME-LBH01.pdf", category: "quy-dinh", type: "pdf", size: "5.1 MB" },
-            { name: "QUY TRINH QUAN LY TIEN TAI CHI NHANH - CUA HANG 01.11.2024.pdf", category: "quy-dinh", type: "pdf", size: "7.1 MB" },
-            { name: "QUY ĐỊNH PHẠT ĐỐI VỚI HÀNG HÓA CẮT SAI QUY CÁCH.pdf", category: "quy-dinh", type: "pdf", size: "334 KB" },
-            { name: "QUY ĐỊNH ĐỐI CHIẾU CÔNG NỢ VÀ KIỂM KÊ ĐỊNH KỲ HÀNG THÁNG (ĐIỀU CHỈNH MỚI ÁP DỤNG TỪ NGÀY 01.12.2025).pdf", category: "quy-dinh", type: "pdf", size: "1.1 MB" },
-            { name: "Quy định mã hoá vị trí và gián tem.pdf", category: "quy-dinh", type: "pdf", size: "6.9 MB" },
-            { name: "Quy định quản lý hàng hóa HTPP (1) (1).pdf", category: "quy-dinh", type: "pdf", size: "5.6 MB" },
-            { name: "QĐ Quản lý, kiểm soát hàng hóa thương mại tại Cửa hàng Hoa Sen Home (1) (1).pdf", category: "quy-dinh", type: "pdf", size: "3.4 MB" },
-            { name: "THƯ THÔNG BÁO CHÍNH SÁCH BÁN MẪU - 23.01.2026.pdf", category: "chinh-sach", type: "pdf", size: "3.3 MB" },
-            { name: "Thông báo Quy định ký quỹ đối với đơn vị vận chuyển và tài xế.pdf", category: "quy-dinh", type: "pdf", size: "1.6 MB" },
-            
-            // Word Files - Tài liệu đào tạo
-            { name: "BCHV final.docx", category: "tai-lieu", type: "word", size: "4.5 MB" },
-            { name: "Báo cáo Kết thúc học việc - Chỉnh lại - Copy.docx", category: "tai-lieu", type: "word", size: "103 KB" },
-            { name: "Chương 1 - Kiểm Soát Tỉnh là ai.docx", category: "tai-lieu", type: "word", size: "171 KB" },
-            { name: "Chương 2 -  CÔNG TÁC QUẢN LÝ, ĐIỀU PHỐI NHÂN SỰ VÀ KIỂM SOÁT RỦI RO TỪ XA (Chốt).docx", category: "tai-lieu", type: "word", size: "52 KB" },
-            { name: "Chương 3 - Quy định chính sách.docx", category: "tai-lieu", type: "word", size: "62 KB" },
-            { name: "Chương 4 - Kiểm Tra Hệ Thống.docx", category: "tai-lieu", type: "word", size: "1.0 MB" },
-            { name: "Chương 5 -  NGHIỆP VỤ VÀ CÁC KỸ NĂNG LIÊN QUAN ĐẾN CÔNG TÁC KIỂM SOÁT 17.05.docx", category: "tai-lieu", type: "word", size: "88 KB" },
-            { name: "Chương 6 -  CÁC KỸ NĂNG BỔ TRỢ - Chỉ cần đọc qua để nắm.docx", category: "tai-lieu", type: "word", size: "225 KB" },
-            { name: "Thông báo Quy định ký quỹ đối với đơn vị vận chuyển và tài xế.docx", category: "quy-dinh", type: "word", size: "18 KB" },
-            { name: "TÀI LIỆU SƠ CẤP-FINAL.docx", category: "tai-lieu", type: "word", size: "4.7 MB" }
-        ];
-
+        // Document data - loaded from JSON file
+        let documents = [];
+        
         const categoryLabels = {
             'chinh-sach': { label: 'Chính sách', color: 'bg-green-100 text-green-700' },
             'bang-gia': { label: 'Bảng giá', color: 'bg-yellow-100 text-yellow-700' },
@@ -752,8 +692,31 @@
             'linh-hoat': { label: 'Linh hoạt', color: 'bg-blue-100 text-blue-700' }
         };
 
+        // Load documents from JSON file
+        async function loadDocumentsFromJSON() {
+            try {
+                const response = await fetch('./documents.json');
+                if (!response.ok) {
+                    throw new Error('Failed to load documents.json');
+                }
+                const data = await response.json();
+                documents = data.documents || [];
+                console.log('Loaded', documents.length, 'documents from JSON');
+            } catch (error) {
+                console.error('Error loading documents:', error);
+                // Fallback to empty array if JSON fails to load
+                documents = [];
+            }
+        }
+        
         function getDisplayName(filename) {
-            // Remove date patterns and translator names
+            // First check if document has displayName property
+            const doc = documents.find(d => d.name === filename);
+            if (doc && doc.displayName) {
+                return doc.displayName;
+            }
+            
+            // Fallback to extracting from filename
             let display = filename
                 .replace(/\.pdf$/i, '')
                 .replace(/\.docx$/i, '')
@@ -1484,16 +1447,31 @@
                 const displayName = doc.displayName || getDisplayName(doc.name);
                 const docDate = doc.startDate || extractDate(doc.name);
                 const endDate = doc.endDate;
-                const isExpired = endDate && new Date() > new Date(endDate);
-                const isAcknowledged = isDocumentAcknowledged(doc.name);
+                const isExpired = endDate && new Date(endDate) < new Date();
+                
+                // Check if acknowledged (for training documents)
                 const isTrainingDoc = trainingCategories.includes(doc.category);
+                const isAcknowledged = isTrainingDoc && getAcknowledgedDocs().includes(doc.name);
                 
-                // Different click behavior based on tab
-                let clickAction = `onclick="openViewer('${doc.name}', '${doc.type}')"`;
-                let cardClass = `cursor-pointer ${isExpired ? 'opacity-60' : ''}`;
+                // Check if has Drive URL
+                const hasDriveUrl = doc.driveUrl && doc.driveUrl.trim() !== '';
                 
-                // For training tab, show acknowledge button
+                // Status badges
+                let statusBadge = '';
+                if (doc.isNew) {
+                    statusBadge = '<span class="text-xs px-2 py-1 rounded-md bg-red-100 text-red-700 font-medium">Mới</span>';
+                }
+                if (isAcknowledged) {
+                    statusBadge = '<span class="text-xs px-2 py-1 rounded-md bg-green-100 text-green-700 font-medium">Đã xác nhận</span>';
+                }
+                if (hasDriveUrl) {
+                    statusBadge += '<span class="text-xs px-2 py-1 rounded-md bg-blue-100 text-blue-700 font-medium"><i class="fab fa-google-drive mr-1"></i>Drive</span>';
+                }
+                
+                // Training buttons for training tab
                 let trainingButtons = '';
+                let clickAction = `onclick="openViewer('${doc.name}', '${doc.type}')" class="cursor-pointer hover:shadow-lg transition-shadow"`;
+                
                 if (currentTab === 'training' && isTrainingDoc && !isAcknowledged && !isExpired) {
                     trainingButtons = `
                         <button onclick="event.stopPropagation(); openTrainingModal('${doc.name}')" 
@@ -1502,14 +1480,6 @@
                         </button>
                     `;
                     cardClass = ''; // Remove cursor-pointer since we have a button
-                }
-                
-                // Show acknowledged status
-                let statusBadge = '';
-                if (isTrainingDoc && isAcknowledged) {
-                    statusBadge = `<span class="text-xs px-2 py-1 rounded-md bg-green-100 text-green-700"><i class="fas fa-check mr-1"></i>Đã xác nhận</span>`;
-                } else if (doc.isNew) {
-                    statusBadge = `<span class="text-xs px-2 py-1 rounded-md bg-orange-100 text-orange-700"><i class="fas fa-sparkles mr-1"></i>Mới</span>`;
                 }
                 
                 return `
@@ -1759,16 +1729,22 @@
         });
 
         // Initialize
-        updateStats();
-        updateTrainingProgress();
-        renderDocuments(documents);
+        async function initializeApp() {
+            await loadDocumentsFromJSON();
+            updateStats();
+            updateTrainingProgress();
+            renderDocuments(documents);
+            
+            // Auto-check for new files if admin
+            setTimeout(() => {
+                if (isAdminLoggedIn) {
+                    checkForNewFiles();
+                }
+            }, 2000);
+        }
         
-        // Auto-check for new files if admin
-        setTimeout(() => {
-            if (isAdminLoggedIn) {
-                checkForNewFiles();
-            }
-        }, 2000);
+        // Start the app
+        initializeApp();
     </script>
 </body>
 </html>
